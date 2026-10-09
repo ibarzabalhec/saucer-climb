@@ -47,11 +47,11 @@ Without this step, scores are kept in each player's browser only. The game hides
 3. Open Project Settings > API. Copy the Project URL and the `anon` `public` key into `config.js`.
 4. Commit and push `config.js`.
 
-The high scores screen then shows three lists: All time, This week, and This Mac. Records rank by floor reached; points break ties. After each round, the game-over screen shows your online rank.
+The high scores screen then shows three lists: All time, This week, and This Mac. Records rank by floor reached; points break ties. Players type their name after a qualifying run, and the game-over screen shows their online rank.
 
 ### About cheating
 
-The anon key is public by design, so anyone determined can post a score without playing. The table rules block the obvious cases: initials must be 3 characters, and a score can't exceed what's possible for the floor reached. Scores can't be edited or deleted with the public key. To remove a bad entry, delete the row in the Supabase table editor.
+The anon key is public by design, so anyone determined can post a score without playing. The table rules block the obvious cases: names must be 1 to 24 characters of letters, numbers, spaces, and . ' -, and a score can't exceed what's possible for the floor reached. Scores can't be edited or deleted with the public key. To remove a bad entry, delete the row in the Supabase table editor.
 
 ## Files
 

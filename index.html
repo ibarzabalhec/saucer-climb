@@ -75,7 +75,7 @@ canvas{display:block;width:100%;height:100%;image-rendering:pixelated;image-rend
 .quote .who{color:#6b6b6b;margin-left:1cqw;white-space:nowrap;}
 .hofh{font-size:2.1cqw;margin-bottom:1cqw;}
 #hofList{list-style:none;margin:0;padding:0;}
-#hofList li{white-space:nowrap;display:grid;grid-template-columns:3cqw 7cqw 1fr auto;align-items:center;font-size:2.3cqw;padding:.45cqw 0;border-bottom:1px solid var(--ink);}
+#hofList li{white-space:nowrap;display:grid;grid-template-columns:3cqw minmax(0,1fr) auto auto;gap:1.2cqw;align-items:center;font-size:2.3cqw;padding:.45cqw 0;border-bottom:1px solid var(--ink);}
 #hofList li.me{background:var(--alien);}
 #hofList .sw{display:inline-block;width:1.2cqw;height:1.2cqw;margin-right:.8cqw;}
 #hofList .num{text-align:right;}
@@ -86,7 +86,7 @@ canvas{display:block;width:100%;height:100%;image-rendering:pixelated;image-rend
 .tab.on{background:var(--ink);color:var(--paper);}
 .tab:focus-visible{outline:3px solid var(--alien);outline-offset:-5px;}
 .board{list-style:none;margin:0;padding:0;flex:1;}
-.board li{display:grid;grid-template-columns:4.5cqw 10cqw 12cqw 8cqw 1fr 9cqw;align-items:center;font-size:2.3cqw;padding:.65cqw 0;border-bottom:1px solid var(--ink);}
+.board li{white-space:nowrap;display:grid;grid-template-columns:4.5cqw minmax(0,1fr) 9cqw 11cqw 16cqw 8cqw;align-items:center;font-size:2.3cqw;padding:.65cqw 0;border-bottom:1px solid var(--ink);}
 .board li.head{font-size:1.8cqw;color:#666;border-bottom:2px solid var(--ink);}
 .board .ini{font-weight:700;font-size:3cqw;}
 .board .r{text-align:right;padding-right:1.4cqw;}
@@ -95,6 +95,7 @@ canvas{display:block;width:100%;height:100%;image-rendering:pixelated;image-rend
 .board li.empty{grid-template-columns:1fr;color:#666;}
 .foot[hidden]{display:none;}
 #hofList .fl{font-weight:700;}
+#hofList .nm, .board .ini.nm{overflow:hidden;text-overflow:ellipsis;}
 .ghost{font-family:var(--pix);font-weight:700;font-size:2.2cqw;color:var(--ink);background:var(--paper);border:2px solid var(--ink);padding:1cqw 1.6cqw;cursor:none;white-space:nowrap;}
 .ghost:focus-visible{outline:3px solid var(--alien);outline-offset:3px;}
 .bgpick[hidden]{display:none;}
@@ -102,11 +103,9 @@ canvas{display:block;width:100%;height:100%;image-rendering:pixelated;image-rend
 .bgpick span{margin-right:.6cqw;}
 .bgpick button{font-family:var(--pix);font-size:1.9cqw;background:var(--paper);color:var(--ink);border:2px solid var(--ink);padding:.4cqw 1.2cqw;cursor:none;}
 .bgpick button.on{background:var(--ink);color:var(--paper);}
-.slots{position:relative;display:flex;gap:1.2cqw;}
-.slot{width:5cqw;height:6.4cqw;border-bottom:.6cqw solid var(--ink);font-family:var(--pix);font-weight:700;font-size:5cqw;line-height:1.15;text-align:center;}
-.slot.cur{background:var(--alien);animation:blink 1s steps(1) infinite;}
-#ini{position:absolute;inset:0;opacity:0;width:100%;height:100%;border:0;cursor:none;}
-@media (prefers-reduced-motion:reduce){ .slot.cur{animation:none;} }
+.slots{display:flex;align-items:center;gap:1cqw;}
+#ini{font-family:var(--pix);font-weight:700;font-size:3.2cqw;width:36cqw;border:0;border-bottom:.5cqw solid var(--ink);background:var(--paper);color:var(--ink);padding:.4cqw .6cqw;outline:none;caret-color:var(--alien);cursor:none;}
+#ini:focus{background:#f6f6f6;}
 @media (prefers-reduced-motion:reduce){ .go .blk{animation:none;} }
 
 #cursor{position:fixed;left:0;top:0;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;
@@ -127,7 +126,7 @@ body.playing #cursor{opacity:0;}
       <div class="meta"><span>A tower game for keyboard</span><span id="mBest">No high score yet</span></div>
       <h1 class="hero" data-text="SAUCER|CLIMB" data-cap="13"></h1>
       <div class="modes" role="group" aria-label="Game mode">
-        <button class="mode" data-m="saucer"><b>Saucer mode</b><span>14 species, events, abductions</span></button>
+        <button class="mode" data-m="saucer"><b>Saucer mode</b><span>15 species, events, abductions</span></button>
         <button class="mode" data-m="classic"><b>Classic mode</b><span>Little Green, pure climbing</span></button>
       </div>
       <div class="roster" id="roster"></div>
@@ -164,7 +163,7 @@ body.playing #cursor{opacity:0;}
       </div>
       <div class="foot" id="oFoot"><button class="go" id="againBtn">Play again<span class="blk"></span></button><span class="small" id="overHint"></span><button class="ghost" id="menuBtn">Menu</button></div>
       <div class="bgpick" id="bgPick"><span id="bgAsk">Background too busy? (B)</span><button data-bg="tiles">Tiles</button><button data-bg="lines">Lines</button><button data-bg="plain">Plain</button></div>
-      <div class="foot" id="oEntry" hidden><span class="small" id="iniHelp" style="margin:0;text-align:left">You made the hall of fame. Type 3 initials, then press Enter. Esc skips</span><div class="slots"><span class="slot"></span><span class="slot"></span><span class="slot"></span><input id="ini" maxlength="3" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Your 3 initials"></div></div>
+      <div class="foot" id="oEntry" hidden><span class="small" id="iniHelp" style="margin:0;text-align:left">You made the hall of fame. Type your name, then press Enter. Esc skips</span><div class="slots"><input id="ini" maxlength="24" autocomplete="nickname" spellcheck="false" placeholder="Your name" aria-label="Your name"></div></div>
     </div>
   </div>
   <div class="bar"><span id="fSpecies"></span><span id="fTrack"></span><span id="fBest"></span></div>
@@ -207,7 +206,9 @@ const SPECIES = [
  {name:'Blue Avian', c:'#5bc0ff', rows:[
 "......ccc.......",".....c.ccc......","....cccccc......","...ccccccccc....","...cccccwkcckk..","...ccccccccckkkk","...cccccccccc...","....cccccccc....",".....cccccc.....","....kkkkkkkk....","...kkkkkkkkkk...","..ckkkkkkkkkkc..","..ckkkkkkkkkkc..","....kkkkkkkk....","....kkkkkkkk....",".....kk..kk.....",".....cc..cc....."]},
  {name:'Flatwoods', c:'#ff3d7f', rows:[
-".......cc.......","......cccc......",".....cccccc.....","....cccccccc....","...cccccccccc...","..cccckkkkcccc..",".ccckwwkkwwkccc.",".ccckwkkkkwkccc.","..cckkkkkkkkcc..","...cccccccccc...","....kkkkkkkk....","...kkkkkkkkkk...","..kkkkkkkkkkkk..",".kkkkkkkkkkkkkk.",".kkkkkkkkkkkkkk.","kkkkkkkkkkkkkkkk"]}
+".......cc.......","......cccc......",".....cccccc.....","....cccccccc....","...cccccccccc...","..cccckkkkcccc..",".ccckwwkkwwkccc.",".ccckwkkkkwkccc.","..cckkkkkkkkcc..","...cccccccccc...","....kkkkkkkk....","...kkkkkkkkkk...","..kkkkkkkkkkkk..",".kkkkkkkkkkkkkk.",".kkkkkkkkkkkkkk.","kkkkkkkkkkkkkkkk"]},
+ {name:'Ayuwoki', c:'#d1182b', face:'#f6f5f1', showman:true, rows:[
+"....kkkkkkkk....","...kkkkkkkkkk...","..kkkffffffkkk..","..kkfkkffkkfkk..","..kkkkkffkkkkk..","..kkfkkffkkfkk..","..kkffffffffkk..","..kkkkffffkkkk..","..kkk..ff..kkk..","..kk.cccccc.kk..","..k.cccccccc.k..","..cc.cccccc.cc..","..cc.cccccc.cc..","..dd.cccccc.dd..",".....cccccc.....",".....cccccc.....",".....cc..cc.....",".....cc..cc.....",".....cc..cc.....","....kkk..kkk...."]}
 ];
 
 // ---------- world: a 320x240 screen ----------
@@ -312,7 +313,8 @@ const STYLE = {
   'Space Siren':  {d:'#ff3d7f', edits:[[5,7,8,'k','d'],[14,4,11,'k','d'],[19,0,15,'k','d'],[20,0,15,'k','d'],[21,0,15,'k','d'],[22,0,15,'k','d']]},
   'Cthulhu':      {d:'#c084fc', edits:[[5,2,2,'k','d'],[5,13,13,'k','d'],[6,1,2,'k','d'],[6,13,14,'k','d'],[7,0,2,'k','d'],[7,13,15,'k','d'],[8,0,3,'k','d'],[8,12,15,'k','d'],[3,5,5,'k','d'],[3,11,11,'k','d']]},
   'Blue Avian':   {d:'#ffbf00', edits:[[4,12,13,'k','d'],[5,12,15,'k','d'],[16,0,15,'c','d'],[9,4,11,'k','d']]},
-  'Flatwoods':    {d:'#facc15', edits:[[6,0,15,'w','d'],[15,0,15,'k','d'],[0,7,8,'c','d']]}
+  'Flatwoods':    {d:'#facc15', edits:[[6,0,15,'w','d'],[15,0,15,'k','d'],[0,7,8,'c','d']]},
+  'Ayuwoki':      {d:'#f5f5f5', edits:[[4,5,5,'k','r'],[4,10,10,'k','r'],[6,5,10,'f','k']], open:[[7,6,9,'f','k'],[8,6,9,'.','k']], side:[[".....kkkkkk.....", "....kkkkkkkk....", "...kkkkkfffk....", "...kkkkffrkf....", "...kkkkffkkf....", "...kkkkffffff...", "...kkkkfkkff....", "...kkkkffff.....", "...kkk..ff......", "...kk.cccc......", "...k.cccccc.....", ".....cccccd.....", ".....cccccd.....", ".....ccccc......", ".....ccccc......", ".....cc..cc.....", "....cc....cc....", "...cc......c....", "...cc.....cc....", "..kkk.....k....."], [".....kkkkkk.....", "....kkkkkkkk....", "...kkkkkfffk....", "...kkkkffrkf....", "...kkkkffkkf....", "...kkkkffffff...", "...kkkkfkkff....", "...kkkkffff.....", "...kkk..ff......", "...kk.cccc......", "...k.cccccc.....", ".....cccccd.....", ".....cccccd.....", ".....ccccc......", ".....ccccc......", ".....ccccc......", ".....cc.cc......", ".....cc..c......", ".....cc.cc......", "....kkkk.k......"], [".....kkkkkk.....", "....kkkkkkkk....", "...kkkkkfffk....", "...kkkkffrkf....", "...kkkkffkkf....", "...kkkkffffff...", "...kkkkfkkff....", "...kkkkffff.....", "...kkk..ff......", "...kk.cccc......", "...k.cccccc.....", ".....cccccd.....", ".....cccccd.....", ".....ccccc......", ".....ccccc......", ".....cc..cc.....", "....cc....cc....", "...c......cc....", "...cc.....cc....", "...k.....kkk...."], [".....kkkkkk.....", "....kkkkkkkk....", "...kkkkkfffk....", "...kkkkffrkf....", "...kkkkffkkf....", "...kkkkffffff...", "...kkkkfkkff....", "...kkkkffff.....", "...kkk..ff......", "...kk.cccc......", "...k.cccccc.....", ".....cccccd.....", ".....cccccd.....", ".....ccccc......", ".....ccccc......", ".....ccccc......", ".....cc.cc......", ".....cc..c......", ".....cc.cc......", "....kkkk.k......"]], moon:[[".....cc..cc.....", ".....cc...cc....", ".....cc....c....", "....kkk....kk..."],[".....cc..cc.....", "....cc...cc.....", "....c....cc.....", "...kk....kkk...."]]}
 };
 const hexMix = (a, b, k) => { const A = [1,3,5].map(i => parseInt(a.slice(i, i + 2), 16)), B = [1,3,5].map(i => parseInt(b.slice(i, i + 2), 16)); return '#' + A.map((v, j) => Math.round(v + (B[j] - v) * k).toString(16).padStart(2, '0')).join(''); };
 // pixel shading: the body color gets a lighter top edge and a darker right and bottom edge
@@ -330,11 +332,28 @@ SPECIES.forEach(s => {
   s.d = st.d;
   let rows = s.rows.map(r => [...r]);
   for (const [r, a, b, from, to] of st.edits){ if (!rows[r]) continue; for (let x = a; x <= b; x++) if (rows[r][x] === from) rows[r][x] = to; }
+  const pal = {k:INK, c:s.c, w:PAPER, d:s.d, f:s.face || '#d9dde3', r:'#ff2a2a', s:hexMix(s.c, '#000000', 0.3), h:hexMix(s.c, '#ffffff', 0.35)};
+  if (st.open){
+    const o = rows.map(r => r.slice());
+    for (const [r, a, b, from, to] of st.open){ if (!o[r]) continue; for (let x = a; x <= b; x++) if (o[r][x] === from) o[r][x] = to; }
+    s.imgOpen = spriteCanvas(shadeRows(stretchRows(o.map(r => r.join('')))), pal);
+  }
+  if (st.moon){
+    s.moon = st.moon.map(legs => {
+      const m = rows.map(r => r.join(''));
+      legs.forEach((row, k) => { m[m.length - legs.length + k] = row; });
+      return spriteCanvas(shadeRows(stretchRows(m)), pal);
+    });
+  }
+  if (st.side){
+    s.side = st.side.map(fr => spriteCanvas(shadeRows(stretchRows(fr)), pal));
+    s.sideHalo = st.side.map(fr => spriteCanvas(stretchRows(fr), {k:PAPER, c:PAPER, w:PAPER, d:PAPER, f:PAPER, r:PAPER}));
+  }
   s.rows = stretchRows(rows.map(r => r.join('')));
-  s.img = spriteCanvas(shadeRows(s.rows), {k:INK, c:s.c, w:PAPER, d:s.d, s:hexMix(s.c, '#000000', 0.3), h:hexMix(s.c, '#ffffff', 0.35)});
+  s.img = spriteCanvas(shadeRows(s.rows), pal);
 });
 const VISITOR = spriteCanvas(SPECIES[1].rows, {k:INK, c:'#c9c9c9', w:'#c9c9c9', d:'#c9c9c9'});
-const GHOSTS = SPECIES.map(s => spriteCanvas(s.rows, {k:s.c, c:s.c, w:s.c, d:s.c}));
+const GHOSTS = SPECIES.map(s => spriteCanvas(s.rows, {k:s.c, c:s.c, w:s.c, d:s.c, f:s.c, r:s.c}));
 const BOARD_ROWS = [
   "...................kk...",
   "....kkkkkkkkkkkkkkkkk...",
@@ -344,7 +363,7 @@ const BOARD_ROWS = [
 const BOARD = spriteCanvas(BOARD_ROWS, {k:INK, w:PAPER, d:PAPER});
 SPECIES.forEach(s => {
   s.board = spriteCanvas(BOARD_ROWS, {k:INK, w:PAPER, d:s.d});
-  s.halo = spriteCanvas(s.rows, {k:PAPER, c:PAPER, w:PAPER, d:PAPER});
+  s.halo = spriteCanvas(s.rows, {k:PAPER, c:PAPER, w:PAPER, d:PAPER, f:PAPER, r:PAPER});
 });
 const BOARD_HALO = spriteCanvas(BOARD_ROWS, {k:PAPER, w:PAPER, d:PAPER});
 // draw a sprite with a white rim so it reads on busy tilework
@@ -681,20 +700,23 @@ function playVox(key, vol, rate, cut){
 const pickOne = arr => arr[Math.floor(Math.random() * arr.length)];
 // each species pitches the shared clips up or down so they sound like their own creature
 const SPECIES_PITCH = {'Little Green':1.25, 'Grey':1.15, 'Nordic':1.0, 'Tall White':1.08, 'Mantid':1.3, 'Reptilian':0.86, 'Mothman':0.8,
-  'Bigfoot':0.74, 'Arcturian':1.04, 'Venusian':1.1, 'Space Siren':1.0, 'Cthulhu':0.68, 'Blue Avian':1.35, 'Flatwoods':1.2};
+  'Bigfoot':0.74, 'Arcturian':1.04, 'Venusian':1.1, 'Space Siren':1.0, 'Cthulhu':0.68, 'Blue Avian':1.35, 'Flatwoods':1.2, 'Ayuwoki':1.1};
 const BIG_JUMPS = ['big1', 'big2', 'big3', 'big4', 'big5'];
 const HUP_M = ['hm1', 'hm2', 'hm3', 'hm4', 'hm5', 'hm6', 'hm7'], HUP_F = ['hf1', 'hf2', 'hf3', 'hf4', 'hf5', 'hf6'];
 let lastBig = '';
 const HEES = ['heehee', 'hee', 'heehee', 'hoo'];
 // a falsetto hee-hee, nudged a little in pitch each time so it never sounds like the same clip
 function heeHee(delay, vol){ const go = () => playVox(pickOne(HEES), vol || 0.5, 0.94 + Math.random() * 0.14, true); delay ? setTimeout(go, delay) : go(); }
+let lastTwitch = -1;
+function servo(){ if (!actx) return; const t = actx.currentTime; voice(sfxBus, t, 900, 0.07, 'square', 0.02, {from:300, glide:0.06}); voice(sfxBus, t + 0.07, 500, 0.06, 'square', 0.015, {from:900, glide:0.05}); noise(sfxBus, t + 0.02, 0.03, 'bandpass', 2600, 0.25); }
 function jumpVoice(big){
   const rate = (SPECIES_PITCH[species.name] || 1) * (0.96 + Math.random() * 0.08);
+  const showman = species.showman;
   if (big){
-    if (Math.random() < 0.35){ heeHee(); return; }                  // about a third of super jumps get a hee-hee
+    if (Math.random() < (showman ? 0.75 : 0.35)){ heeHee(); return; }                  // about a third of super jumps get a hee-hee
     let k; do { k = pickOne(BIG_JUMPS); } while (k === lastBig); lastBig = k;
     playVox(k, 0.55, rate, true);                                   // the "woohoo" on a super jump
-  } else if (Math.random() < 0.08){
+  } else if (Math.random() < (showman ? 0.3 : 0.08)){
     heeHee(0, 0.35);                                                // and now and then on a small jump too
   } else if (Math.random() < 0.55){
     playVox(pickOne(species.voice === 'f' ? HUP_F : HUP_M), 0.28, rate, false);   // a softer effort on ordinary jumps
@@ -1091,7 +1113,7 @@ function step(dt){
     evNext -= dt;
     if (evNext <= 0){
       const pool = Object.keys(EVENTS).filter(k => EVENTS[k].cat === evCat && !recentEv.includes(k) && !(REDUCED && k === 'signal'));
-      startEvent(pool[Math.floor(Math.random() * pool.length)]);
+      startEvent(species.showman && pool.includes('disco') && Math.random() < 0.45 ? 'disco' : pool[Math.floor(Math.random() * pool.length)]);
       evCat = evCat === 'boon' ? 'hex' : 'boon';      // boons and hexes take turns
     }
   }
@@ -1282,7 +1304,7 @@ function showOver(){
   document.body.classList.remove('playing');
   speak(DEATH_LINES[Math.floor(Math.random() * DEATH_LINES.length)]);
   showOverlay('over');
-  if (entering){ const i = $('#ini'); i.value = store.get('scl.ini', '').replace(/\./g, ''); $('#iniHelp').textContent = 'You made the hall of fame. Type 3 initials, then press Enter. Esc skips'; showSlots(); i.focus(); i.select(); }
+  if (entering){ const i = $('#ini'); i.value = store.get('scl.ini', ''); $('#iniHelp').textContent = 'You made the hall of fame. Type your name, then press Enter. Esc skips'; i.focus(); i.select(); }
 }
 
 const TABS = ONLINE ? [['all','All time'],['week','This week'],['local','This Mac']] : [['local','This Mac']];
@@ -1301,15 +1323,16 @@ function boardRows(rows){
   const head = '<li class="head"><span>#</span><span>Name</span><span>Floor</span><span class="r">Score</span><span>Species</span><span>Date</span></li>';
   if (!rows.length) return head + '<li class="empty"><span>No scores yet. Play a round to set one.</span></li>';
   return head + rows.map((r, i) => {
-    const me = myEntry && r.initials === myEntry.n && r.score === myEntry.s;
-    return '<li class="' + (me ? 'me' : '') + '"><span>' + (i + 1) + '</span><span class="ini">' + esc(r.initials) + '</span><span class="ini">' + r.floor + '</span><span class="r">' + r.score + '</span><span><span class="sw" style="background:' + swatch(r.species) + '"></span>' + esc(r.species) + '</span><span>' + fmtDate(r.created_at) + '</span></li>';
+    const nm = r.name || r.initials || '';
+    const me = myEntry && nm === myEntry.n && r.score === myEntry.s;
+    return '<li class="' + (me ? 'me' : '') + '"><span>' + (i + 1) + '</span><span class="ini nm">' + esc(nm) + '</span><span class="ini">' + r.floor + '</span><span class="r">' + r.score + '</span><span><span class="sw" style="background:' + swatch(r.species) + '"></span>' + esc(r.species) + '</span><span>' + fmtDate(r.created_at) + '</span></li>';
   }).join('');
 }
 let loadToken = 0;
 function loadTab(){
   const t = TABS[tabIdx][0], token = ++loadToken;
   if (t === 'local'){
-    $('#board').innerHTML = boardRows(hof.map(h => ({initials:h.n, score:h.s, floor:h.f, species:h.sp, created_at:h.d})));
+    $('#board').innerHTML = boardRows(hof.map(h => ({name:h.n, score:h.s, floor:h.f, species:h.sp, created_at:h.d})));
     $('#boardNote').textContent = ONLINE ? 'Scores saved in this browser' : 'Scores saved in this browser. The online board is not set up in this copy.';
     return;
   }
@@ -1338,14 +1361,14 @@ const api = (path, opts) => fetch(CFG.supabaseUrl.replace(/\/$/, '') + '/rest/v1
   headers: Object.assign({apikey: CFG.supabaseKey, Authorization: 'Bearer ' + CFG.supabaseKey, 'Content-Type': 'application/json'}, (opts && opts.headers) || {})
 }));
 async function fetchBoard(range){
-  let q = 'scores?select=initials,score,floor,species,created_at&order=floor.desc,score.desc,created_at.asc&limit=10';
+  let q = 'scores?select=name,score,floor,species,created_at&order=floor.desc,score.desc,created_at.asc&limit=10';
   if (range === 'week') q += '&created_at=gte.' + encodeURIComponent(new Date(Date.now() - 7 * 864e5).toISOString());
   const r = await api(q);
   if (!r.ok) throw new Error('HTTP ' + r.status);
   return r.json();
 }
 async function submitScore(e){
-  const r = await api('scores', {method:'POST', headers:{Prefer:'return=minimal'}, body: JSON.stringify({initials:e.n, score:e.s, floor:e.f, species:e.sp})});
+  const r = await api('scores', {method:'POST', headers:{Prefer:'return=minimal'}, body: JSON.stringify({name:e.n, score:e.s, floor:e.f, species:e.sp})});
   if (!r.ok) throw new Error('HTTP ' + r.status);
   const c = await api('scores?select=id&or=(floor.gt.' + e.f + ',and(floor.eq.' + e.f + ',score.gt.' + e.s + '))', {method:'HEAD', headers:{Prefer:'count=exact'}});
   const m = (c.headers.get('content-range') || '').match(/\/(\d+)/);
@@ -1357,11 +1380,11 @@ function renderHof(){
   $('#topFloor').textContent = '';
   const top = hof.slice(0, 5);
   if (!hof.length){ ol.innerHTML = '<li><span></span><span>---</span><span>No entries yet</span><span></span></li>'; return; }
-  ol.innerHTML = top.map((h, i) => '<li class="' + (i === lastEntry ? 'me' : '') + '"><span>' + (i + 1) + '</span><span>' + h.n + '</span><span class="fl">FLOOR ' + h.f + '</span><span class="num"><span class="sw" style="background:' + swatch(h.sp) + '"></span>' + h.s + ' pts</span></li>').join('');
+  ol.innerHTML = top.map((h, i) => '<li class="' + (i === lastEntry ? 'me' : '') + '"><span>' + (i + 1) + '</span><span class="nm">' + esc(h.n) + '</span><span class="fl">FLOOR ' + h.f + '</span><span class="num"><span class="sw" style="background:' + swatch(h.sp) + '"></span>' + h.s + ' pts</span></li>').join('');
 }
 function saveEntry(){
-  const n = $('#ini').value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 3);
-  if (n.length < 3){ $('#iniHelp').textContent = 'Initials need 3 letters or numbers. Add ' + (3 - n.length) + ' more, then press Enter'; return; }
+  const n = cleanName($('#ini').value);
+  if (!n){ $('#iniHelp').textContent = 'Type a name first, then press Enter. Esc skips'; return; }
   store.set('scl.ini', n);
   const entry = {n, s:lastScore, f:maxFloor, sp:classic ? 'Classic' : species.name, d:Date.now()};
   hof.push(entry);
@@ -1377,12 +1400,10 @@ function saveEntry(){
   entering = false; $('#oEntry').hidden = true; $('#oFoot').hidden = false; $('#ini').blur();
   overlayAt = performance.now(); renderHof();
 }
-function showSlots(){
-  const i = $('#ini'), v = i.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 3);
-  if (i.value !== v) i.value = v;
-  document.querySelectorAll('.slot').forEach((el, k) => { el.textContent = v[k] || ''; el.classList.toggle('cur', k === Math.min(v.length, 2) && (v.length < 3)); });
+function cleanName(v){
+  return v.normalize('NFC').replace(/[^\p{L}\p{N} .'\-]/gu, '').replace(/\s+/g, ' ').trim().slice(0, 24);
 }
-$('#ini').addEventListener('input', showSlots);
+$('#ini').addEventListener('input', () => { const i = $('#ini'), c = i.value.replace(/[^\p{L}\p{N} .'\-]/gu, ''); if (c !== i.value) i.value = c; });
 $('#ini').addEventListener('keydown', e => {
   if (e.key === 'Enter'){ e.preventDefault(); saveEntry(); }
   else if (e.key === 'Escape'){ e.preventDefault(); entering = false; $('#oEntry').hidden = true; $('#oFoot').hidden = false; $('#ini').blur(); overlayAt = performance.now(); }
@@ -1737,7 +1758,13 @@ function drawClimber(){
   if (p.landT > 0) off = 1;
   const teeter = p.ground && p.cur && p.cur.i > 0 && Math.abs(p.vx) < 0.25 && (p.x < p.cur.x + 1 || p.x > p.cur.x + p.cur.w - 1);
   const idle = p.ground && Math.abs(p.vx) < 0.3 && !teeter;
-  const tx = teeter ? (Math.floor(time * 9) % 2 ? 1 : -1) : (species.sway && idle ? Math.round(Math.sin(time * 3.2)) : 0);
+  let tx = teeter ? (Math.floor(time * 9) % 2 ? 1 : -1) : (species.sway && idle ? Math.round(Math.sin(time * 3.2)) : 0);
+  let face = p.face, twitch = 0;
+  if (species.showman){
+    if (p.ground && Math.abs(p.vx) > 0.6){ face = -Math.sign(p.vx); tx = 0; }    // he travels backwards on the ground
+    if (idle) tx = [0, 1, 0, -1][Math.floor(time * 6) % 4];                         // a little dance shuffle
+    if ((time % 3.7) < 0.12){ twitch = Math.random() < 0.5 ? -1 : 1; const n = Math.floor(time / 3.7); if (n !== lastTwitch && state === 'play'){ lastTwitch = n; servo(); } }   // the animatronic twitch
+  }
   const bodyScale = ev && ev.type === 'shrink' ? [0.6, 0.6] : null;
   ctx.save();
   if (p.spin){
@@ -1746,12 +1773,35 @@ function drawClimber(){
     rimmed(species.board, BOARD_HALO, -12, Math.round(ch / 2) - 5);
     rimmed(img, species.halo, -8, Math.round(ch / 2) - 5 - h + off);
   } else {
-    ctx.translate(x, y); ctx.scale(p.face, 1); if (bodyScale) ctx.scale(bodyScale[0], bodyScale[1]);
+    ctx.translate(x, y); ctx.scale(face, 1); if (bodyScale) ctx.scale(bodyScale[0], bodyScale[1]);
     rimmed(species.board, BOARD_HALO, -12, -5);
-    rimmed(img, species.halo, -8 + tx, -5 - h + off);
+    let im = twitch && species.imgOpen ? species.imgOpen : img, halo = species.halo;
+    if (species.side && p.ground && Math.abs(p.vx) > 0.6 && !twitch){
+      const fi = Math.floor(time * (5 + Math.abs(p.vx) * 1.6)) % species.side.length;
+      im = species.side[fi]; halo = species.sideHalo[fi];
+    }
+    if (twitch){ ctx.save(); ctx.translate(-8 + tx + 8, -5 - h / 2); ctx.rotate(twitch * 0.12); ctx.translate(-8, h / 2 - h); rimmed(im, halo, 0, off); ctx.restore(); }
+    else rimmed(im, halo, -8 + tx, -5 - h + (im === img || im === species.imgOpen ? off : 0));
+    // a one-frame glitch: the head slips sideways and its colors invert
+    if (species.showman && (time % 2.9) < 0.05){
+      const hh = Math.round(h * 0.42), sh = Math.random() < 0.5 ? -2 : 2;
+      ctx.save(); ctx.globalCompositeOperation = 'difference';
+      ctx.drawImage(im, 0, 0, 16, hh, -8 + tx + sh, -5 - h + off, 16, hh);
+      ctx.restore();
+    }
   }
   ctx.restore();
+  // sequins catching the light on the showman's suit
+  if (species.showman && !p.spin){
+    ctx.fillStyle = PAPER;
+    for (let k = 0; k < 3; k++){ const r = Math.sin(time * 9 + k * 2.3), q = Math.cos(time * 7 + k * 1.7); if (r > 0.2) ctx.fillRect(x + Math.round(q * 3), y - 5 - Math.round(h * (0.25 + 0.25 * (r + 1) / 2)), 1, 1); }
+  }
   if (teeter){ ctx.fillStyle = INK; ctx.fillRect(x, y - h - 13, 2, 5); ctx.fillRect(x, y - h - 7, 2, 2); }
+  if (species.showman && combo.active){
+    ctx.save(); ctx.globalAlpha = 0.22; ctx.fillStyle = '#fff6c8';
+    ctx.beginPath(); ctx.moveTo(x - 6, 0); ctx.lineTo(x + 6, 0); ctx.lineTo(x + 18, y + 2); ctx.lineTo(x - 18, y + 2); ctx.closePath(); ctx.fill();
+    ctx.restore();
+  }
   if (ev && ev.type === 'hover' && !p.ground && p.vy > 0){ ctx.fillStyle = species.c; for (let k = -9; k <= 9; k += 3) if ((k + Math.floor(time * 20)) % 2) ctx.fillRect(x + k, y + 1, 2, 1); }
   // speed lines under a super jump
   if (p.spin && p.vy < -4){

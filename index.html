@@ -167,7 +167,7 @@ body.playing #cursor{opacity:0;}
         <div><div class="hofh">Best on this Mac</div><ol id="hofList"></ol><div class="net" id="topFloor"></div><div class="net" id="netStatus"></div></div>
       </div>
       <div class="foot" id="oFoot"><button class="go" id="againBtn">Play again<span class="blk"></span></button><span class="small" id="overHint"></span><button class="ghost" id="menuBtn">Menu</button></div>
-      <div class="bgpick" id="bgPick"><span id="bgAsk">Background too busy? (B)</span><button data-bg="tiles">Tiles</button><button data-bg="lines">Lines</button><button data-bg="plain">Plain</button><span style="margin-left:1.6cqw">Screen (L):</span><button data-theme-set="light">Light</button><button data-theme-set="dark">Dark</button></div>
+      <div class="bgpick" id="bgPick"><span id="bgAsk">Background too busy? (B)</span><button data-bg="tiles">Art</button><button data-bg="lines">Lines</button><button data-bg="plain">Plain</button><span style="margin-left:1.6cqw">Screen (L):</span><button data-theme-set="light">Light</button><button data-theme-set="dark">Dark</button></div>
       <div class="foot" id="oEntry" hidden><span class="small" id="iniHelp" style="margin:0;text-align:left">You made the hall of fame. Type your name, then press Enter. Esc skips</span><div class="slots"><input id="ini" maxlength="24" autocomplete="nickname" spellcheck="false" placeholder="Your name" aria-label="Your name"></div></div>
     </div>
   </div>
@@ -1486,7 +1486,7 @@ $('#pMenuBtn').addEventListener('click', () => goMenu());
 const canStart = () => !entering && performance.now() - overlayAt > 350 && (state === 'menu' || (state === 'over' && $('#over').classList.contains('show')));
 
 function start(){
-  if (!classic) rerollBackground();
+  if (!classic){ rerollBackground(); rerollArt(); }
   unlockAudio(); reset(); pickSpecies();
   state = 'play'; showOverlay(null);
   document.body.classList.add('playing');
@@ -1668,6 +1668,122 @@ function fillPattern(pat, ox, oy, alphaV){
   ctx.fillRect(INL - Math.round(ox) - 2, -Math.round(oy) - 2, INR - INL + 4, H + 4);
   ctx.restore();
 }
+
+// ---------- art backgrounds ----------
+// Each 100 floors is a room with one composition, painted in opaque pigments on white paper:
+// no transparency, no outlines, every edge on the pixel grid, soft edges done with ordered
+// dithering the way 8-bit hardware faked gradients. The art is fixed to the tower and
+// scrolls one-to-one with the ledges, painted in 240-pixel chunks and cached.
+const PIGMENTS = ['#e0301e', '#1f3fd6', '#f5c400', '#0f9d58', '#ff5fa2', '#ff6a00', '#111111'];
+const BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
+const dith = (x, y, t) => t * 16 > BAYER[y & 3][x & 3] + 0.5;
+const ART_CH = 240, ART_W = INR - INL;
+let artOrder = [0, 1, 2, 3, 4, 5, 6, 7], artPairs = [], artCache = new Map();
+function rerollArt(){
+  for (let i = artOrder.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [artOrder[i], artOrder[j]] = [artOrder[j], artOrder[i]]; }
+  artPairs = artOrder.map(() => { const a = Math.floor(Math.random() * 6); let b; do { b = Math.floor(Math.random() * 6); } while (b === a); return [PIGMENTS[a], PIGMENTS[b]]; });
+  artCache.clear();
+}
+rerollArt();
+const rgbOf = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+// the alien head used by the portrait grid, 12 wide
+const ART_HEAD = [
+  "....kkkk....", "..kkkkkkkk..", ".kkkkkkkkkk.", "kkkkkkkkkkkk", "kkkkkkkkkkkk", "keeekkkkeeek",
+  "keeeekkeeeek", ".keeekkeeek.", ".kkkkkkkkkk.", "..kkkkkkkk..", "...kkkkkk...", "....kkkk....", ".....kk....."];
+const ARTS = [
+  // 0: two stacked fields of color with dithered edges
+  (put, R, A, B) => {
+    const fields = [[A, 10 + R() * 14, 10 + R() * 8, 96 + R() * 10], [B, 10 + R() * 14, 124 + R() * 6, 100 + R() * 8]];
+    for (const [c, m, y0, h] of fields) for (let y = Math.round(y0); y < y0 + h; y++) for (let x = Math.round(m); x < ART_W - m; x++){
+      const d = Math.min(x - m, ART_W - m - x, y - y0, y0 + h - y);
+      if (d > 7 || dith(x, y, d / 7)) put(x, y, c);
+    }
+  },
+  // 1: one large disc per chunk, alternating sides, cut by the shaft edge
+  (put, R, A, B, ci) => {
+    const left = ci % 2 === 0, cx = left ? 30 + R() * 30 : ART_W - 30 - R() * 30, cy = 120, r = 72 + R() * 26;
+    for (let y = 0; y < ART_CH; y++) for (let x = 0; x < ART_W; x++){ const d = Math.hypot(x - cx, y - cy); if (d < r) put(x, y, ci % 4 < 2 ? A : B); }
+    if (R() < 0.6){ const sx = left ? ART_W - 40 : 40, sy = 40 + R() * 160; for (let y = -14; y <= 14; y++) for (let x = -14; x <= 14; x++) if (x * x + y * y < 196) put(Math.round(sx + x), Math.round(sy + y), ci % 4 < 2 ? B : A); }
+  },
+  // 2: diagonal bands, continuous up the whole room
+  (put, R, A, B, ci) => {
+    const seq = [A, null, null, B, null, null];
+    for (let y = 0; y < ART_CH; y++) for (let x = 0; x < ART_W; x++){
+      const wy = y - ci * ART_CH, v = (x + wy + 100000) / 16, k = Math.floor(v), f = v - k;
+      let c = seq[k % 6];
+      if (f > 0.82 && !dith(x, y, (1 - f) / 0.18)) c = seq[(k + 1) % 6];
+      if (c) put(x, y, c);
+    }
+  },
+  // 3: an ordered-dither gradient that drifts from one pigment to the other and back as you climb
+  (put, R, A, B, ci) => {
+    for (let y = 0; y < ART_CH; y++){
+      const wy = (ci * ART_CH + (ART_CH - y)) % 720, t = wy < 360 ? wy / 360 : (720 - wy) / 360;
+      for (let x = 0; x < ART_W; x++){
+        const edge = (Math.min(x, ART_W - 1 - x) - 40) / 20;   // a central panel that dithers out to paper
+        if (edge <= 0 || (edge < 1 && !dith(x, y, edge))) continue;
+        put(x, y, dith(x, y, t) ? B : A);
+      }
+    }
+  },
+  // 4: concentric quarter rings from a corner, alternating
+  (put, R, A, B, ci) => {
+    const cx = ci % 2 ? 0 : ART_W, cy = ART_CH, seq = [A, null, null, B, null, null];
+    for (let y = 0; y < ART_CH; y++) for (let x = 0; x < ART_W; x++){ const c = seq[Math.floor(Math.hypot(x - cx, y - cy) / 10) % 6]; if (c) put(x, y, c); }
+  },
+  // 5: floating bars and a circle at angles, sparse
+  (put, R, A, B) => {
+    const shapes = 3 + Math.floor(R() * 2);
+    for (let k = 0; k < shapes; k++){
+      const c = k === 0 ? '#111111' : k % 2 ? A : B, cx = 20 + R() * (ART_W - 40), cy = 20 + R() * (ART_CH - 40);
+      const w = k === 0 ? 70 + R() * 50 : 30 + R() * 60, h = k === 0 ? 7 : 14 + R() * 30, a = (R() - 0.5) * 1.2, ca = Math.cos(a), sa = Math.sin(a);
+      for (let y = -90; y <= 90; y++) for (let x = -90; x <= 90; x++){ const u = x * ca + y * sa, v = -x * sa + y * ca; if (Math.abs(u) < w / 2 && Math.abs(v) < h / 2) put(Math.round(cx + x), Math.round(cy + y), c); }
+    }
+    const r = 12 + R() * 14, cx = 30 + R() * (ART_W - 60), cy = 30 + R() * (ART_CH - 60);
+    for (let y = -r; y <= r; y++) for (let x = -r; x <= r; x++) if (x * x + y * y < r * r) put(Math.round(cx + x), Math.round(cy + y), A);
+  },
+  // 6: alien heads on a sparse grid, alternating pigments, every other cell left empty
+  (put, R, A, B, ci) => {
+    const cw = 56, chh = 60;
+    for (let gy = 0; gy < 4; gy++) for (let gx = 0; gx < 4; gx++){
+      if ((gx + gy + ci) % 2) continue;
+      const fg = (gx + gy * 2 + ci) % 3 === 0 ? B : A, ox = gx * cw + 4, oy = gy * chh + 4;
+      ART_HEAD.forEach((row, ry) => { for (let rx = 0; rx < 12; rx++){ const ch = row[rx]; if (ch === '.') continue; for (let dy = 0; dy < 4; dy++) for (let dx = 0; dx < 4; dx++) put(ox + rx * 4 + dx, oy + ry * 4 + dy, ch === 'e' ? '#111111' : fg); } });
+    }
+  },
+  // 7: halftone dots that swell across a diagonal
+  (put, R, A, B, ci) => {
+    for (let gy = 0; gy < ART_CH; gy += 8) for (let gx = 0; gx < ART_W; gx += 8){
+      const wy = gy - ci * ART_CH, t = (Math.sin((gx + wy) / 70) + 1) / 2, r = 0.5 + t * 2.6, c = (Math.floor((gx - wy) / 160) & 1) ? A : B;
+      for (let y = -4; y < 4; y++) for (let x = -4; x < 4; x++) if ((x + 0.5) ** 2 + (y + 0.5) ** 2 < r * r) put(gx + 4 + x, gy + 4 + y, c);
+    }
+  }
+];
+function artChunk(ci){
+  const key = ci + (DARK ? 'd' : '');
+  let c = artCache.get(key);
+  if (c) return c;
+  c = document.createElement('canvas'); c.width = ART_W; c.height = ART_CH;
+  const x2 = c.getContext('2d'), img = x2.createImageData(ART_W, ART_CH), px = img.data;
+  px.fill(255);
+  const memo = {};
+  // the dark screen inverts the light one, so pigments are turned half a hue circle first and land back on themselves
+  const put = (x, y, hex) => {
+    if (x < 0 || y < 0 || x >= ART_W || y >= ART_CH) return;
+    const v = memo[hex] || (memo[hex] = rgbOf(DARK && hex !== '#111111' && hex !== '#ffffff' ? hueShift(hex, 180) : hex));
+    const i = (y * ART_W + x) * 4; px[i] = v[0]; px[i + 1] = v[1]; px[i + 2] = v[2];
+  };
+  const sec = Math.floor(ci * ART_CH / GAP / 100), k = sec % ARTS.length, [A, B] = artPairs[k];
+  ARTS[artOrder[k]](put, rng(ci * 7919 + artOrder[k] * 31 + 1), A, B, ci);
+  x2.putImageData(img, 0, 0);
+  artCache.set(key, c);
+  if (artCache.size > 24) artCache.delete(artCache.keys().next().value);
+  return c;
+}
+function drawArt(){
+  const lo = Math.max(0, Math.floor(-(cam + H) / ART_CH)), hi = Math.floor(-cam / ART_CH);
+  for (let ci = lo; ci <= hi; ci++) ctx.drawImage(artChunk(ci), INL, Math.round(-(ci + 1) * ART_CH - cam));
+}
 let bgRings = [], ringClock = 0;
 let bgMode = store.get('scl.bg', 'tiles');
 const BG_MODES = ['tiles', 'lines', 'plain'];
@@ -1691,6 +1807,7 @@ function drawInterior(){
     ctx.save(); ctx.translate(INL, oy - 16); ctx.fillStyle = dotPattern; ctx.fillRect(0, 0, INR - INL, H + 32); ctx.restore();
     return;
   }
+  if (bgMode === 'tiles'){ drawArt(); drawSpeedLines(); return; }
   const alt = Math.max(0, -cam / GAP), sec = Math.floor(alt / 100), frac = alt % 100;
   const cur = bgOrder[sec % bgOrder.length], nxt = bgOrder[(sec + 1) % bgOrder.length];
   const blend = frac > 85 ? (frac - 85) / 15 : 0;
@@ -1807,7 +1924,7 @@ function undoInvert(rects){
 
 function drawWalls(){
   ctx.fillStyle = INK; ctx.fillRect(0, 0, INL, H); ctx.fillRect(INR, 0, W - INR, H);
-  if (!classic){
+  if (!classic && bgMode === 'lines'){
     const pat = latticePattern(0, 1, '#1a1a1a'), oy = Math.round(-cam * 1) % 32;
     for (const [x0, w0] of [[0, INL], [INR, W - INR]]){
       ctx.save(); ctx.beginPath(); ctx.rect(x0, 0, w0, H); ctx.clip();
@@ -1829,11 +1946,14 @@ function drawWalls(){
 }
 
 function drawGiantNumber(){
+  if (bgMode === 'tiles' && !classic) return;   // the art rooms stay clean
   const s = String(state === 'menu' ? 0 : maxFloor);
   const sc = Math.max(4, Math.min(12, Math.floor((INR - INL - 16) / (s.length * 6 - 1))));
   const w = width5(s, sc), x = Math.round((INL + INR) / 2 - w / 2), y = Math.round(H / 2 - 7 * sc / 2);
-  ctx.save(); ctx.globalAlpha = classic || bgMode === 'plain' ? 0.08 : 0.45;
-  text5(s, x, y, sc, classic || bgMode === 'plain' ? INK : '#ffffff');
+  // drawn as a one-pixel checkerboard, the honest pixel-art way to be half there
+  ctx.save(); ctx.beginPath();
+  for (let yy = y; yy < y + 7 * sc; yy++) for (let xx = x + (yy & 1); xx < x + w; xx += 2) ctx.rect(xx, yy, 1, 1);
+  ctx.clip(); text5(s, x, y, sc, bgMode === 'tiles' && !classic ? '#ffffff' : DOTC);
   ctx.restore();
 }
 

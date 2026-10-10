@@ -20,7 +20,7 @@ Two modes, chosen on the menu (or press C):
 | V | Presenter voice on or off |
 | H | High scores |
 | C | Switch between Saucer and Classic mode (menu) |
-| B | Background: tiles, lines, or plain (Saucer mode) |
+| B | Background: art, lines, or plain (Saucer mode) |
 | L | Lights off: dark arcade screen, or back to light |
 | R | Random species (menu) |
 | F | Full screen |

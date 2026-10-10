@@ -619,9 +619,25 @@ function scheduler(){
     music.next += spb; music.step = (music.step + 1) % 64;
   }
 }
+// Shuffle bag: every track plays once before any repeats, and a new round never
+// opens with the track that just played. The bag survives page reloads.
+let trackBag = (() => { try { return JSON.parse(localStorage.getItem('scl.trackBag')) || []; } catch(e){ return []; } })();
+function nextBagTrack(){
+  trackBag = trackBag.filter(n => Number.isInteger(n) && n >= 0 && n < TRACKS.length);
+  if (!trackBag.length){
+    trackBag = TRACKS.map((_, n) => n);
+    for (let a = trackBag.length - 1; a > 0; a--){ const b = Math.floor(Math.random() * (a + 1)); [trackBag[a], trackBag[b]] = [trackBag[b], trackBag[a]]; }
+    const prev = store.get('scl.lastTrack', -1);
+    if (trackBag[0] === prev && trackBag.length > 1) trackBag.push(trackBag.shift());
+  }
+  const n = trackBag.shift();
+  try { localStorage.setItem('scl.trackBag', JSON.stringify(trackBag)); } catch(e){}
+  return n;
+}
 function startMusic(i){
   if (!actx) return;
-  music.track = i === undefined ? Math.floor(Math.random() * TRACKS.length) : i;
+  music.track = i === undefined ? nextBagTrack() : i;
+  try { localStorage.setItem('scl.lastTrack', JSON.stringify(music.track)); } catch(e){}
   music.step = 0; music.lastLead = 0; music.next = actx.currentTime + 0.05; music.playing = true;
   musicBus.gain.cancelScheduledValues(actx.currentTime); musicBus.gain.setValueAtTime(0.38, actx.currentTime);
   if (!music.timer) music.timer = setInterval(scheduler, 25);

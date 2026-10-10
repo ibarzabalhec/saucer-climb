@@ -18,9 +18,23 @@
   --pix:'Silkscreen','Courier New',monospace;
   --deco:'Jacquard 24','Silkscreen',serif;
   --bw:960px; --bh:720px;
+  --dim:#6b6b6b;
 }
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --paper:#ffffff; --ink:#000000; } }
-:root[data-theme="dark"]{ --paper:#ffffff; --ink:#000000; }
+/* Dark mode: black and chrome arcade cabinet. The canvas is drawn light and inverted, so these match it exactly. */
+:root[data-theme="dark"]{ --paper:#000000; --ink:#ffffff; --dim:#8a8a8a; }
+:root[data-theme="dark"] body{ background:radial-gradient(ellipse at 50% 45%, #141414 0%, #000 70%); }
+:root[data-theme="dark"] #box{ box-shadow:0 0 0 2px #fff, 0 0 0 6px #000, 0 0 0 8px #3a3a3a, 0 0 60px -10px var(--alien); }
+:root[data-theme="dark"] #box::after{ content:''; position:absolute; inset:0; pointer-events:none; z-index:5;
+  background:repeating-linear-gradient(to bottom, rgba(255,255,255,0) 0, rgba(255,255,255,0) 2px, rgba(0,0,0,.28) 3px, rgba(0,0,0,0) 4px),
+             radial-gradient(ellipse at center, rgba(0,0,0,0) 62%, rgba(0,0,0,.55) 100%); }
+:root[data-theme="dark"] canvas{ filter:contrast(1.06) saturate(1.3); }
+:root[data-theme="dark"] .hero{ background:linear-gradient(180deg, #ffffff 0%, #ffffff 38%, #7d7d7d 50%, #e9e9e9 54%, #ffffff 70%, #a8a8a8 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent; }
+:root[data-theme="dark"] .hero .l.alt{ color:var(--alien); -webkit-text-fill-color:var(--alien); text-shadow:0 0 .12em var(--alien); }
+:root[data-theme="dark"] .go .blk{ box-shadow:0 0 .5em var(--alien); }
+:root[data-theme="dark"] .newbest, :root[data-theme="dark"] #hofList li.me, :root[data-theme="dark"] .board li.me{ color:#000; }
+:root[data-theme="dark"] #ini:focus{ background:#141414; }
+:root[data-theme="dark"] .sp canvas{ filter:drop-shadow(.18cqw 0 0 #fff) drop-shadow(-.18cqw 0 0 #fff) drop-shadow(0 .18cqw 0 #fff) drop-shadow(0 -.18cqw 0 #fff); }
 html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%;background:var(--paper);}
 *,*::before,*::after{box-sizing:inherit}
 body{margin:0;height:100%;background:var(--paper);color:var(--ink);font-family:var(--pix);overflow:hidden;cursor:none;}
@@ -28,8 +42,9 @@ body{margin:0;height:100%;background:var(--paper);color:var(--ink);font-family:v
 .bar{width:var(--bw);max-width:100%;display:flex;justify-content:space-between;align-items:baseline;font-size:11px;line-height:1.3;gap:16px;}
 .bar .keys{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
 .bar b{font-weight:700;}
+.bar .tog{cursor:none;text-decoration:underline;text-underline-offset:3px;}
 .swatch{display:inline-block;width:10px;height:10px;background:var(--alien);margin-right:8px;vertical-align:0;}
-#box{position:relative;width:var(--bw);height:var(--bh);background:var(--ink);}
+#box{position:relative;overflow:hidden;width:var(--bw);height:var(--bh);background:var(--ink);}
 canvas{display:block;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges;}
 
 .ov{position:absolute;inset:0;display:none;flex-direction:column;background:var(--paper);container-type:size;padding:3.2cqw 3.6cqw;}
@@ -70,9 +85,9 @@ canvas{display:block;width:100%;height:100%;image-rendering:pixelated;image-rend
 .split > div + div{padding-left:1.8cqw;border-left:2px solid var(--ink);}
 .statl div{font-size:2.1cqw;margin-bottom:.9cqw;}
 .statl b{display:block;font-size:3.2cqw;}
-.statl .who{display:block;color:#6b6b6b;margin-top:.4cqw;}
+.statl .who{display:block;color:var(--dim);margin-top:.4cqw;}
 .quote{margin:1.6cqw 0 0;font-size:2.6cqw;line-height:1.3;}
-.quote .who{color:#6b6b6b;margin-left:1cqw;white-space:nowrap;}
+.quote .who{color:var(--dim);margin-left:1cqw;white-space:nowrap;}
 .hofh{font-size:2.1cqw;margin-bottom:1cqw;}
 #hofList{list-style:none;margin:0;padding:0;}
 #hofList li{white-space:nowrap;display:grid;grid-template-columns:3cqw minmax(0,1fr) auto auto;gap:1.2cqw;align-items:center;font-size:2.3cqw;padding:.45cqw 0;border-bottom:1px solid var(--ink);}
@@ -87,12 +102,12 @@ canvas{display:block;width:100%;height:100%;image-rendering:pixelated;image-rend
 .tab:focus-visible{outline:3px solid var(--alien);outline-offset:-5px;}
 .board{list-style:none;margin:0;padding:0;flex:1;}
 .board li{white-space:nowrap;display:grid;grid-template-columns:4.5cqw minmax(0,1fr) 9cqw 11cqw 16cqw 8cqw;align-items:center;font-size:2.3cqw;padding:.65cqw 0;border-bottom:1px solid var(--ink);}
-.board li.head{font-size:1.8cqw;color:#666;border-bottom:2px solid var(--ink);}
+.board li.head{font-size:1.8cqw;color:var(--dim);border-bottom:2px solid var(--ink);}
 .board .ini{font-weight:700;font-size:3cqw;}
 .board .r{text-align:right;padding-right:1.4cqw;}
 .board li.me{background:var(--alien);}
 .board .sw{display:inline-block;width:1.2cqw;height:1.2cqw;margin-right:.8cqw;}
-.board li.empty{grid-template-columns:1fr;color:#666;}
+.board li.empty{grid-template-columns:1fr;color:var(--dim);}
 .foot[hidden]{display:none;}
 #hofList .fl{font-weight:700;}
 #hofList .nm, .board .ini.nm{overflow:hidden;text-overflow:ellipsis;}
@@ -118,7 +133,7 @@ body.playing #cursor{opacity:0;}
 <body>
 <div id="app">
   <div class="bar"><span>Saucer Climb</span>
-    <span class="keys"><span><b>&larr; &rarr;</b> Move</span><span><b>Space</b> Jump</span><span><b>P</b> Pause</span><span><b>M</b> Sound</span><span><b>N</b> Next track</span><span><b>V</b> Voice</span><span><b>H</b> Scores</span><span><b>B</b> Background</span><span><b>Esc</b> Menu</span><span><b>F</b> Full screen</span></span></div>
+    <span class="keys"><span><b>&larr; &rarr;</b> Move</span><span><b>Space</b> Jump</span><span><b>P</b> Pause</span><span><b>M</b> Sound</span><span><b>N</b> Next track</span><span><b>V</b> Voice</span><span><b>H</b> Scores</span><span><b>B</b> Background</span><span class="tog" id="themeTog"><b>L</b> Lights off</span><span><b>Esc</b> Menu</span><span><b>F</b> Full screen</span></span></div>
   <div id="box">
     <canvas id="game" width="320" height="240" aria-label="Game view"></canvas>
 
@@ -162,7 +177,7 @@ body.playing #cursor{opacity:0;}
         <div><div class="hofh">Best on this Mac</div><ol id="hofList"></ol><div class="net" id="topFloor"></div><div class="net" id="netStatus"></div></div>
       </div>
       <div class="foot" id="oFoot"><button class="go" id="againBtn">Play again<span class="blk"></span></button><span class="small" id="overHint"></span><button class="ghost" id="menuBtn">Menu</button></div>
-      <div class="bgpick" id="bgPick"><span id="bgAsk">Background too busy? (B)</span><button data-bg="tiles">Tiles</button><button data-bg="lines">Lines</button><button data-bg="plain">Plain</button></div>
+      <div class="bgpick" id="bgPick"><span id="bgAsk">Background too busy? (B)</span><button data-bg="tiles">Tiles</button><button data-bg="lines">Lines</button><button data-bg="plain">Plain</button><span style="margin-left:1.6cqw">Screen (L):</span><button data-theme-set="light">Light</button><button data-theme-set="dark">Dark</button></div>
       <div class="foot" id="oEntry" hidden><span class="small" id="iniHelp" style="margin:0;text-align:left">You made the hall of fame. Type your name, then press Enter. Esc skips</span><div class="slots"><input id="ini" maxlength="24" autocomplete="nickname" spellcheck="false" placeholder="Your name" aria-label="Your name"></div></div>
     </div>
   </div>
@@ -216,6 +231,12 @@ const W = 320, H = 240, INL = 48, INR = 272;
 const GAP = 40, FH = 14, TILE = 8;
 const G = 0.36, MAXV = 4.4, FOOT = 7, STEP = 1/120, COMBO_TIME = 3, LEVEL_TIME = 30;
 const PAPER = '#ffffff', INK = '#000000', DOTC = '#e4e4e4';
+// Dark mode draws the same light frame and inverts it at the end of render().
+// Anything that should keep its true color (the alien, its board, species-color effects)
+// is drawn pre-inverted, so the final flip lands it back on its real color.
+const negHex = h => { const n = parseInt(h.slice(1), 16) ^ 0xffffff; return '#' + n.toString(16).padStart(6, '0'); };
+const DARK_PREF = (() => { try { const v = localStorage.getItem('scl.theme'); if (v) return JSON.parse(v) === 'dark'; } catch(e){} return !!(window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches); })();
+let DARK = DARK_PREF, AC = '#34e07a';
 
 const store = {
   get(k, d){ try{ const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); }catch(e){ return d; } },
@@ -353,7 +374,7 @@ SPECIES.forEach(s => {
   s.img = spriteCanvas(shadeRows(s.rows), pal);
 });
 const VISITOR = spriteCanvas(SPECIES[1].rows, {k:INK, c:'#c9c9c9', w:'#c9c9c9', d:'#c9c9c9'});
-const GHOSTS = SPECIES.map(s => spriteCanvas(s.rows, {k:s.c, c:s.c, w:s.c, d:s.c, f:s.c, r:s.c}));
+let GHOSTS = SPECIES.map(s => spriteCanvas(s.rows, {k:s.c, c:s.c, w:s.c, d:s.c, f:s.c, r:s.c}));
 const BOARD_ROWS = [
   "...................kk...",
   "....kkkkkkkkkkkkkkkkk...",
@@ -365,7 +386,42 @@ SPECIES.forEach(s => {
   s.board = spriteCanvas(BOARD_ROWS, {k:INK, w:PAPER, d:s.d});
   s.halo = spriteCanvas(s.rows, {k:PAPER, c:PAPER, w:PAPER, d:PAPER, f:PAPER, r:PAPER});
 });
-const BOARD_HALO = spriteCanvas(BOARD_ROWS, {k:PAPER, w:PAPER, d:PAPER});
+let BOARD_HALO = spriteCanvas(BOARD_ROWS, {k:PAPER, w:PAPER, d:PAPER});
+function negCanvas(src){
+  const c = document.createElement('canvas'); c.width = src.width; c.height = src.height;
+  const x = c.getContext('2d'); x.drawImage(src, 0, 0);
+  x.globalCompositeOperation = 'difference'; x.fillStyle = '#ffffff'; x.fillRect(0, 0, c.width, c.height);
+  x.globalCompositeOperation = 'destination-in'; x.drawImage(src, 0, 0);
+  return c;
+}
+function tintCanvas(src, color){
+  const c = document.createElement('canvas'); c.width = src.width; c.height = src.height;
+  const x = c.getContext('2d'); x.fillStyle = color; x.fillRect(0, 0, c.width, c.height);
+  x.globalCompositeOperation = 'destination-in'; x.drawImage(src, 0, 0);
+  return c;
+}
+const SPRITES_L = SPECIES.map(s => ({img:s.img, imgOpen:s.imgOpen, moon:s.moon, side:s.side, sideHalo:s.sideHalo, board:s.board, halo:s.halo}));
+const GHOSTS_L = GHOSTS, BOARD_HALO_L = BOARD_HALO;
+let SPRITES_D = null, GHOSTS_D = null;
+// in the dark the rim becomes a neon outline in the species color
+function buildDarkSprites(){
+  SPRITES_D = SPECIES.map((s, i) => {
+    const L = SPRITES_L[i], glow = negHex(s.c), n = c => c && negCanvas(c), t = c => c && tintCanvas(c, glow);
+    return {img:n(L.img), imgOpen:n(L.imgOpen), moon:L.moon && L.moon.map(n), side:L.side && L.side.map(n), sideHalo:L.sideHalo && L.sideHalo.map(t), board:n(L.board), halo:t(L.halo), boardHalo:t(BOARD_HALO_L)};
+  });
+  GHOSTS_D = GHOSTS_L.map(negCanvas);
+}
+function applyTheme(){
+  document.documentElement.dataset.theme = DARK ? 'dark' : 'light';
+  if (DARK && !SPRITES_D) buildDarkSprites();
+  SPECIES.forEach((s, i) => { const set = DARK ? SPRITES_D[i] : SPRITES_L[i]; for (const k in set) if (k !== 'boardHalo') s[k] = set[k]; });
+  GHOSTS = DARK ? GHOSTS_D : GHOSTS_L;
+  BOARD_HALO = DARK ? SPRITES_D[SPECIES.indexOf(species)].boardHalo : BOARD_HALO_L;
+  AC = DARK ? negHex(species.c) : species.c;
+  document.querySelectorAll('[data-theme-set]').forEach(b => b.classList.toggle('on', (b.dataset.themeSet === 'dark') === DARK));
+  const tg = document.getElementById('themeTog'); if (tg) tg.innerHTML = '<b>L</b> ' + (DARK ? 'Lights on' : 'Lights off');
+}
+function setTheme(d){ DARK = d; store.set('scl.theme', DARK ? 'dark' : 'light'); applyTheme(); }
 // draw a sprite with a white rim so it reads on busy tilework
 function rimmed(img, halo, x, y){
   if (!classic) for (const [dx, dy] of [[-1,0],[1,0],[0,-1],[0,1]]) ctx.drawImage(halo, x + dx, y + dy);
@@ -379,6 +435,8 @@ function pickSpecies(){
   else do { i = Math.floor(Math.random() * SPECIES.length); } while (i === lastSpecies);
   lastSpecies = i; species = SPECIES[i];
   document.documentElement.style.setProperty('--alien', species.c);
+  AC = DARK ? negHex(species.c) : species.c;
+  if (DARK && SPRITES_D) BOARD_HALO = SPRITES_D[i].boardHalo;
   $('#fSpecies').innerHTML = '<span class="swatch"></span>Species: ' + species.name;
 }
 
@@ -388,7 +446,7 @@ function buildRoster(){
   const q = document.createElement('span'); q.className = 'rnd'; q.innerHTML = '<span class="q">?</span><span class="rl">Random</span>'; mk(-1, q);
   SPECIES.forEach((s, i) => {
     const h = s.rows.length + 5, c = document.createElement('canvas'); c.width = 24; c.height = h;
-    const x = c.getContext('2d'); x.drawImage(s.board, 0, h - 5); x.drawImage(s.img, 4, 0);
+    const x = c.getContext('2d'); x.drawImage(SPRITES_L[i].board, 0, h - 5); x.drawImage(SPRITES_L[i].img, 4, 0);
     c.style.height = (h * 0.235).toFixed(2) + 'cqw';
     mk(i, c);
   });
@@ -792,6 +850,7 @@ window.addEventListener('keydown', e => {
   else if (k === 'v' || k === 'V'){ voiceOn = !voiceOn; store.set('scl.voice', voiceOn); if (!voiceOn && window.speechSynthesis) speechSynthesis.cancel(); else speak('voice on', true); }
   else if (k === 'n' || k === 'N'){ if (state === 'play') startMusic((music.track + 1) % TRACKS.length); }
   else if (k === 'f' || k === 'F') toggleFull();
+  else if (k === 'l' || k === 'L') setTheme(!DARK);
   else if ((k === 'b' || k === 'B') && !classic) setBg(BG_MODES[(BG_MODES.indexOf(bgMode) + 1) % BG_MODES.length]);
   else return;
   e.preventDefault();
@@ -879,7 +938,7 @@ function endCombo(){
     speak(word.toLowerCase());
     sfx.combo(n);
     if (Math.random() < (n >= 15 ? 0.6 : 0.3)) heeHee(350);        // combos often end with one
-    burst(p.x, p.y - 10, 10 + Math.min(30, n), species.c, 5, 3, 'big');
+    burst(p.x, p.y - 10, 10 + Math.min(30, n), AC, 5, 3, 'big');
     if (n >= 15 && !classic) stampCropCircle(n);
     if (classic){}
     else if (n >= 50){ negT = 10; strobe = 6; sfx.negative(); msg('ANOMALY', 'FLOORS COUNT DOUBLE', 'negative', n); }
@@ -1069,12 +1128,12 @@ function step(dt){
     p.ground = false; p.cur = null; coyote = 0; jumpBuf = 0;
     p.spin = p.vy < -11.2;
     sfx.jump(p.spin);
-    if (p.spin) burst(p.x, p.y, 6, species.c, 3, 2, 'big');
+    if (p.spin) burst(p.x, p.y, 6, AC, 3, 2, 'big');
   }
   else if (ev && ev.type === 'double' && jumpBuf > 0 && !p.ground && coyote <= 0 && p.airJumps > 0){
     // the second jump: a fresh push upward from midair
     p.vy = -(5.6 + Math.abs(p.vx) * 1.3); p.airJumps = 0; jumpBuf = 0;
-    for (let k = 0; k < 10; k++) parts.push({x:p.x + (k - 4.5) * 2, y:p.y + 2, vx:(k - 4.5) * 0.25, vy:0.6, life:0, max:0.35, color:k % 2 ? species.c : INK, size:1, grav:0});
+    for (let k = 0; k < 10; k++) parts.push({x:p.x + (k - 4.5) * 2, y:p.y + 2, vx:(k - 4.5) * 0.25, vy:0.6, life:0, max:0.35, color:k % 2 ? AC : INK, size:1, grav:0});
     if (actx) voice(sfxBus, actx.currentTime, 1200, 0.12, 'square', 0.035, {from:500, glide:0.1});
   }
   if (p.ground) p.airJumps = 1;
@@ -1097,7 +1156,7 @@ function step(dt){
   const left = INL + 9, right = INR - 9;
   const wallHit = side => {
     p.vx = side * Math.abs(p.vx) * 0.95; p.face = side; bounceT = 0.14;
-    if (Math.abs(p.vx) > 2){ shakeT = 0.08; sfx.bounce(); if (Math.random() < 0.25) heeHee(0, 0.4); burst(side > 0 ? INL : INR, p.y - 10, 6, species.c, 2.5, 1.5, 'big'); }
+    if (Math.abs(p.vx) > 2){ shakeT = 0.08; sfx.bounce(); if (Math.random() < 0.25) heeHee(0, 0.4); burst(side > 0 ? INL : INR, p.y - 10, 6, AC, 2.5, 1.5, 'big'); }
   };
   if (p.x < left){ p.x = left; if (p.ground) p.vx = 0; else wallHit(1); }
   if (p.x > right){ p.x = right; if (p.ground) p.vx = 0; else wallHit(-1); }
@@ -1119,7 +1178,7 @@ function step(dt){
 
   // combo streak: a trail of blocks in the species color while a combo is live
   if (combo.active && !p.ground && Math.random() < 0.6 * f){
-    parts.push({x:p.x + (Math.random()-.5)*12, y:p.y - 4 - Math.random()*16, vx:(Math.random()-.5)*0.4, vy:0.2, life:0, max:0.35 + Math.min(0.5, combo.floors * 0.012), color:Math.random() < 0.7 ? species.c : INK, size:combo.floors >= 15 ? 2 : 1, grav:0, star:true});
+    parts.push({x:p.x + (Math.random()-.5)*12, y:p.y - 4 - Math.random()*16, vx:(Math.random()-.5)*0.4, vy:0.2, life:0, max:0.35 + Math.min(0.5, combo.floors * 0.012), color:Math.random() < 0.7 ? AC : INK, size:combo.floors >= 15 ? 2 : 1, grav:0, star:true});
   }
 
   if (combo.active){ combo.timer -= dt; if (combo.timer <= 0) endCombo(); }
@@ -1138,7 +1197,7 @@ function step(dt){
   if (ev && ev.type === 'heavy' && Math.random() < 0.6 * f)
     parts.push({x:INL + Math.random() * (INR - INL), y:camY - 2, vx:0, vy:1.6 + Math.random(), life:0, max:1.6, color:'#9a9a9a', size:1, grav:0});
   if (ev && ev.type === 'wind') for (let k = 0; k < 2; k++) if (Math.random() < 0.9 * f)
-    parts.push({x:ev.dir > 0 ? INL - Math.random() * 20 : INR + Math.random() * 20, y:camY + Math.random() * H, vx:ev.dir * (4 + Math.random() * 3), vy:(Math.random() - 0.5) * 0.3, life:0, max:1.1, color:Math.random() < 0.3 ? species.c : '#8c8c8c', size:1, grav:0, wind:ev.dir});
+    parts.push({x:ev.dir > 0 ? INL - Math.random() * 20 : INR + Math.random() * 20, y:camY + Math.random() * H, vx:ev.dir * (4 + Math.random() * 3), vy:(Math.random() - 0.5) * 0.3, life:0, max:1.1, color:Math.random() < 0.3 ? AC : '#8c8c8c', size:1, grav:0, wind:ev.dir});
   if (ev && ev.type === 'meteor'){
     ev.tick = (ev.tick || 0.4) - dt;
     if (ev.tick <= 0){
@@ -1156,14 +1215,14 @@ function step(dt){
       p.vx = (p.x >= m.x ? 1 : -1) * 4.5; p.vy = Math.max(p.vy, 3); p.ground = false; p.cur = null; p.spin = false;
       shakeT = 0.2; flash(0.04);
       if (actx){ noise(sfxBus, actx.currentTime, 0.25, 'lowpass', 400, 0.25); voice(sfxBus, actx.currentTime, 60, 0.25, 'square', 0.05, {from:160, glide:0.2}); }
-      for (let k = 0; k < 12; k++) parts.push({x:m.x, y:m.y, vx:(Math.random() - .5) * 4, vy:-Math.random() * 2.5, life:0, max:0.5, color:k % 3 ? INK : species.c, size:2, grav:1});
+      for (let k = 0; k < 12; k++) parts.push({x:m.x, y:m.y, vx:(Math.random() - .5) * 4, vy:-Math.random() * 2.5, life:0, max:0.5, color:k % 3 ? INK : AC, size:2, grav:1});
     }
   }
   meteors = meteors.filter(m => !m.hit && m.y < camY + H + 20);
   if (ev && ev.type === 'burner' && !p.ground && p.vy < 0) for (let k = 0; k < 2; k++)
-    parts.push({x:p.x + (Math.random() - 0.5) * 8, y:p.y + 2, vx:(Math.random() - 0.5) * 0.6, vy:1.5 + Math.random() * 1.5, life:0, max:0.35, color:Math.random() < 0.6 ? species.c : INK, size:Math.random() < 0.4 ? 2 : 1, grav:0});
+    parts.push({x:p.x + (Math.random() - 0.5) * 8, y:p.y + 2, vx:(Math.random() - 0.5) * 0.6, vy:1.5 + Math.random() * 1.5, life:0, max:0.35, color:Math.random() < 0.6 ? AC : INK, size:Math.random() < 0.4 ? 2 : 1, grav:0});
   if (ev && ev.type === 'hover' && !p.ground && p.vy > 0 && Math.random() < 0.8 * f)
-    parts.push({x:p.x + (Math.random() < 0.5 ? -8 : 8), y:p.y + 2, vx:0, vy:1.2, life:0, max:0.3, color:species.c, size:1, grav:0});
+    parts.push({x:p.x + (Math.random() < 0.5 ? -8 : 8), y:p.y + 2, vx:0, vy:1.2, life:0, max:0.3, color:AC, size:1, grav:0});
   if (ev && ev.type === 'visitor'){
     const T = ev.t;
     ev.cracks = ev.cracks || []; ev.steps = ev.steps || 0; ev.taps = ev.taps || 0;
@@ -1180,7 +1239,7 @@ function step(dt){
     }
   }
   if (ev && ev.type === 'tractor' && ev.t < TRACTOR_RIDE && Math.random() < 1.5 * f)
-    parts.push({x:INL + Math.random() * (INR - INL), y:camY - 4, vx:0, vy:10 + Math.random() * 6, life:0, max:0.4, color:Math.random() < 0.3 ? species.c : '#a0a0a0', size:1, grav:0, streak:true});
+    parts.push({x:INL + Math.random() * (INR - INL), y:camY - 4, vx:0, vy:10 + Math.random() * 6, life:0, max:0.4, color:Math.random() < 0.3 ? AC : '#a0a0a0', size:1, grav:0, streak:true});
   if (ev && ev.type === 'radar'){
     ev.pulses = ev.pulses || []; ev.ping = (ev.ping || 0) - dt;
     if (ev.ping <= 0){
@@ -1190,7 +1249,7 @@ function step(dt){
     ev.pulses = ev.pulses.filter(q => time - q.t < 2.2);
   }
   if (ev && ev.type === 'turbo' && Math.abs(p.vx) > MAXV * 0.9 && Math.random() < 0.8 * f)
-    parts.push({x:p.x - Math.sign(p.vx) * 10, y:p.y - 4 - Math.random() * 20, vx:-Math.sign(p.vx) * 3, vy:0, life:0, max:0.3, color:Math.random() < 0.5 ? species.c : '#9a9a9a', size:1, grav:0});
+    parts.push({x:p.x - Math.sign(p.vx) * 10, y:p.y - 4 - Math.random() * 20, vx:-Math.sign(p.vx) * 3, vy:0, life:0, max:0.3, color:Math.random() < 0.5 ? AC : '#9a9a9a', size:1, grav:0});
   // during Crumble, ledges above you also start breaking on their own
   if (ev && ev.type === 'crumble'){
     ev.tick = (ev.tick || 0) - dt;
@@ -1232,13 +1291,13 @@ function step(dt){
         ev.found++;
         if (ev.found === 6){ bonusScore += 200; msg('CASE CLOSED', '6 FOUND  +200', 'species'); sfx.combo(30); heeHee(300); floaters.push({x:a.x, y:a.y - 20, t:0, text:'+200'}); }
       }
-      for (let k = 0; k < 10; k++) parts.push({x:a.x, y:a.y, vx:(Math.random() - .5) * 3, vy:-Math.random() * 2.5, life:0, max:0.6, color:k % 2 ? species.c : INK, size:1 + (k % 2), grav:0.3, star:true});
+      for (let k = 0; k < 10; k++) parts.push({x:a.x, y:a.y, vx:(Math.random() - .5) * 3, vy:-Math.random() * 2.5, life:0, max:0.6, color:k % 2 ? AC : INK, size:1 + (k % 2), grav:0.3, star:true});
     }
   }
   if (ev && ev.type === 'warp'){
     const wk = warpK();
     tempoMul = 1 + 0.4 * wk;   // the music climbs with it
-    if (Math.random() < 1.4 * wk * f) parts.push({x:INL + Math.random() * (INR - INL), y:camY - 4, vx:0, vy:9 + Math.random() * 5, life:0, max:0.5, color:Math.random() < 0.25 ? species.c : '#9a9a9a', size:1, grav:0, streak:true});
+    if (Math.random() < 1.4 * wk * f) parts.push({x:INL + Math.random() * (INR - INL), y:camY - 4, vx:0, vy:9 + Math.random() * 5, life:0, max:0.5, color:Math.random() < 0.25 ? AC : '#9a9a9a', size:1, grav:0, streak:true});
     if (wk > 0.4 && Math.floor(time * 60) % 3 === 0){ echoes.push({x:p.x, y:p.y, face:p.face, born:time}); if (echoes.length > 8) echoes.shift(); }
   }
   if (ev && ev.type === 'slow' && Math.floor(time * 60) % 4 === 0){ echoes.push({x:p.x, y:p.y, face:p.face, born:time}); if (echoes.length > 8) echoes.shift(); }
@@ -1426,7 +1485,9 @@ $('#ini').addEventListener('keydown', e => {
   e.stopPropagation();
 });
 $('#menuBtn').addEventListener('click', () => goMenu());
-document.querySelectorAll('.bgpick button').forEach(b => b.addEventListener('click', () => setBg(b.dataset.bg)));
+document.querySelectorAll('[data-theme-set]').forEach(b => b.addEventListener('click', () => setTheme(b.dataset.themeSet === 'dark')));
+$('#themeTog').addEventListener('click', () => setTheme(!DARK));
+document.querySelectorAll('.bgpick button[data-bg]').forEach(b => b.addEventListener('click', () => setBg(b.dataset.bg)));
 $('#pMenuBtn').addEventListener('click', () => goMenu());
 const canStart = () => !entering && performance.now() - overlayAt > 350 && (state === 'menu' || (state === 'over' && $('#over').classList.contains('show')));
 
@@ -1630,7 +1691,7 @@ let bgMode = store.get('scl.bg', 'tiles');
 const BG_MODES = ['tiles', 'lines', 'plain'];
 function setBg(m){
   bgMode = m; store.set('scl.bg', m);
-  document.querySelectorAll('.bgpick button').forEach(b => b.classList.toggle('on', b.dataset.bg === m));
+  document.querySelectorAll('.bgpick button[data-bg]').forEach(b => b.classList.toggle('on', b.dataset.bg === m));
 }
 // a rotated, translated pattern fill, for the slowly turning far layer
 function fillPatternRot(pat, ox, oy, ang, alphaV){
@@ -1672,7 +1733,7 @@ function drawInterior(){
   // color waves: rings in the species color that light up the lattice as they pass
   ringClock -= 1 / 60;
   if (state === 'play' && ringClock <= 0){ ringClock = 3.5; emitRing(p.x, p.y - 12); }
-  const tinted = latticePattern(cur, 1, species.c);
+  const tinted = latticePattern(cur, 1, AC);
   for (const r of bgRings){
     const rad = (time - r.t0) * 85; if (rad > 300) continue;
     const cx = r.x, cy = r.y - cam;
@@ -1694,13 +1755,13 @@ function drawFloor(raw){
   if (ev && raw.i > 0){
     const sy = Math.round(lg.y - cam);
     if (ev.type === 'goo'){
-      ctx.fillStyle = species.c; ctx.fillRect(lg.x, sy - 1, lg.w, 2);
+      ctx.fillStyle = AC; ctx.fillRect(lg.x, sy - 1, lg.w, 2);
       for (let k = 0; k < 3; k++){ const dx = (raw.i * 37 + k * 53) % Math.max(1, lg.w - 4) + 2, len = 2 + Math.round((Math.sin(time * 2 + raw.i + k * 2) + 1) * 3); ctx.fillRect(lg.x + dx, sy + FH, 2, len); }
     }
     if (ev.type === 'disco' && raw.i % 100 !== 0){
       const hop = discoHop(raw.i);
       // lights flash on the way up; dust kicks out at the bottom of each hop
-      if (hop > 0.35){ ctx.fillStyle = species.c; ctx.fillRect(lg.x + 1, sy + 1, lg.w - 2, 2); }
+      if (hop > 0.35){ ctx.fillStyle = AC; ctx.fillRect(lg.x + 1, sy + 1, lg.w - 2, 2); }
       if (hop < 0.12){
         ctx.fillStyle = '#9a9a9a';
         for (let k = 0; k < 4; k++){ ctx.fillRect(lg.x - 3 - k * 2, sy + FH - 2 - (k % 2), 2, 1); ctx.fillRect(lg.x + lg.w + 1 + k * 2, sy + FH - 2 - (k % 2), 2, 1); }
@@ -1712,7 +1773,7 @@ function drawFloor(raw){
 function drawFloorShape(fl){
   const sy = Math.round(fl.y - cam);
   if (sy > H || sy < -FH - 16) return;
-  if (fl.i === 0){ ctx.fillStyle = INK; ctx.fillRect(fl.x, sy, fl.w, H - sy + 4); return; }
+  if (fl.i === 0){ ctx.fillStyle = INK; ctx.fillRect(fl.x, sy, fl.w, H - sy + 4); if (DARK) undoInvert([[fl.x, sy, fl.w, H - sy + 4]]); return; }
   if (!classic){ ctx.fillStyle = PAPER; ctx.fillRect(fl.x - 1, sy - 1, fl.w + 2, FH + 2); }
   ctx.fillStyle = PAPER; ctx.fillRect(fl.x, sy, fl.w, FH);
   ctx.save(); ctx.translate(fl.x, sy); ctx.fillStyle = styleFor(fl.i); ctx.fillRect(0, 0, fl.w, FH); ctx.restore();
@@ -1729,7 +1790,15 @@ function drawFloorShape(fl){
     ctx.fillStyle = PAPER; ctx.fillRect(tx + 1, ty + 1, tw - 2, 9);
     ctx.fillStyle = INK; ctx.fillRect(tx + 2, ty + 2, tw - 4, 7);
     text5(s, tx + 3, ty + 2, 1, PAPER);
+    if (DARK) undoInvert([[tx + 1, sy + FH, 1, 3], [tx + tw - 2, sy + FH, 1, 3], [tx, ty, tw, 11]]);
   }
+  if (DARK) undoInvert(classic ? [[fl.x, sy, fl.w, FH]] : [[fl.x - 1, sy - 1, fl.w + 2, FH + 2]]);
+}
+// dark mode inverts the shaft at the end of the frame; pre-inverting a rect here cancels that out
+function undoInvert(rects){
+  ctx.save(); ctx.globalCompositeOperation = 'difference'; ctx.fillStyle = '#ffffff';
+  for (const [x, y, w, h] of rects) ctx.fillRect(x, y, w, h);
+  ctx.restore();
 }
 
 function drawWalls(){
@@ -1818,7 +1887,7 @@ function drawClimber(){
     ctx.beginPath(); ctx.moveTo(x - 6, 0); ctx.lineTo(x + 6, 0); ctx.lineTo(x + 18, y + 2); ctx.lineTo(x - 18, y + 2); ctx.closePath(); ctx.fill();
     ctx.restore();
   }
-  if (ev && ev.type === 'hover' && !p.ground && p.vy > 0){ ctx.fillStyle = species.c; for (let k = -9; k <= 9; k += 3) if ((k + Math.floor(time * 20)) % 2) ctx.fillRect(x + k, y + 1, 2, 1); }
+  if (ev && ev.type === 'hover' && !p.ground && p.vy > 0){ ctx.fillStyle = AC; for (let k = -9; k <= 9; k += 3) if ((k + Math.floor(time * 20)) % 2) ctx.fillRect(x + k, y + 1, 2, 1); }
   // speed lines under a super jump
   if (p.spin && p.vy < -4){
     ctx.save(); ctx.globalCompositeOperation = 'difference'; ctx.fillStyle = '#ffffff';
@@ -2013,7 +2082,7 @@ function capsule(x, y, w, h, fill, line){
   }
 }
 function drawCraft(c, ux, uy, T){
-  const lit = k => (k + Math.floor(T * 14)) % 2 === 0 ? species.c : PAPER;
+  const lit = k => (k + Math.floor(T * 14)) % 2 === 0 ? AC : PAPER;
   if (c.shape === 'saucer'){
     for (const [dx, dy] of [[-1,0],[1,0],[0,-1],[0,1]]) ctx.drawImage(SAUCER_HALO, ux - 16 + dx, uy + dy);
     ctx.drawImage(SAUCER, ux - 16, uy);
@@ -2035,22 +2104,22 @@ function drawCraft(c, ux, uy, T){
       for (let r = -g; r < 18 + g; r++){ const half = Math.round(Math.max(0, r) * 0.9) + g; ctx.fillRect(ux - half, uy + r, half * 2 + 1, 1); }
     }
     ctx.fillStyle = PAPER; ctx.fillRect(ux - 14, uy + 14, 3, 3); ctx.fillRect(ux + 12, uy + 14, 3, 3); ctx.fillRect(ux - 1, uy + 2, 3, 3);
-    ctx.fillStyle = Math.floor(T * 6) % 2 ? species.c : INK; ctx.fillRect(ux - 1, uy + 10, 3, 3);
+    ctx.fillStyle = Math.floor(T * 6) % 2 ? AC : INK; ctx.fillRect(ux - 1, uy + 10, 3, 3);
   } else if (c.shape === 'orb'){
     const r = 7 + (Math.floor(T * 8) % 2);
     ctx.fillStyle = PAPER; disc(ux, uy + 8, r + 2); ctx.fillStyle = INK; disc(ux, uy + 8, r + 1);
-    ctx.fillStyle = species.c; disc(ux, uy + 8, r - 1); ctx.fillStyle = PAPER; ctx.fillRect(ux - 3, uy + 5, 2, 2);
+    ctx.fillStyle = AC; disc(ux, uy + 8, r - 1); ctx.fillStyle = PAPER; ctx.fillRect(ux - 3, uy + 5, 2, 2);
   } else if (c.shape === 'foo'){
     for (let k = 0; k < 3; k++){
       const a = T * 7 + k * 2.09, x = Math.round(ux + Math.cos(a) * 8), y = Math.round(uy + 6 + Math.sin(a) * 4);
-      ctx.fillStyle = PAPER; disc(x, y, 4); ctx.fillStyle = INK; disc(x, y, 3); ctx.fillStyle = k === 0 ? PAPER : species.c; disc(x, y, 1);
+      ctx.fillStyle = PAPER; disc(x, y, 4); ctx.fillStyle = INK; disc(x, y, 3); ctx.fillStyle = k === 0 ? PAPER : AC; disc(x, y, 1);
     }
   } else if (c.shape === 'cube'){
     ctx.fillStyle = INK; disc(ux, uy + 10, 11); ctx.fillStyle = PAPER; disc(ux, uy + 10, 10);
     const sp = Math.floor(T * 6) % 2;
     ctx.fillStyle = INK;
     for (let r = 0; r < 9; r++){ const w = sp ? 4 : (r < 5 ? r : 8 - r); ctx.fillRect(ux - w, uy + 6 + r, w * 2 + 1, 1); }
-    ctx.fillStyle = species.c; ctx.fillRect(ux, uy + 10, 1, 1);
+    ctx.fillStyle = AC; ctx.fillRect(ux, uy + 10, 1, 1);
   } else if (c.shape === 'gimbal'){
     // a lozenge with pods top and bottom that slowly tilts
     // tilt by shearing rows so the pixels stay crisp
@@ -2085,11 +2154,11 @@ function drawCraft(c, ux, uy, T){
     for (let k = -4; k <= 4; k++){
       const x = ux + k * 4, y = uy + Math.round(Math.abs(k) * 1.5);
       ctx.fillStyle = INK; ctx.fillRect(x - 1, y - 1, 4, 4);
-      ctx.fillStyle = (k + Math.floor(T * 10)) % 3 === 0 ? PAPER : species.c; ctx.fillRect(x, y, 2, 2);
+      ctx.fillStyle = (k + Math.floor(T * 10)) % 3 === 0 ? PAPER : AC; ctx.fillRect(x, y, 2, 2);
     }
   } else if (c.shape === 'hessdalen'){
     const r = 4 + (Math.floor(T * 11 + Math.sin(T * 7) * 3) % 3);
-    ctx.fillStyle = INK; disc(ux, uy + 6, r + 2); ctx.fillStyle = PAPER; disc(ux, uy + 6, r + 1); ctx.fillStyle = species.c; disc(ux, uy + 6, Math.max(1, r - 2));
+    ctx.fillStyle = INK; disc(ux, uy + 6, r + 2); ctx.fillStyle = PAPER; disc(ux, uy + 6, r + 1); ctx.fillStyle = AC; disc(ux, uy + 6, Math.max(1, r - 2));
   } else if (c.shape === 'pancake'){
     ctx.fillStyle = PAPER; ell(ux, uy + 4, 19, 5); ctx.fillStyle = INK; ell(ux, uy + 4, 18, 4);
     ctx.fillRect(ux - 22, uy + 2, 4, 2); ctx.fillRect(ux + 19, uy + 2, 4, 2);   // fins
@@ -2101,7 +2170,7 @@ function drawCraft(c, ux, uy, T){
     }
     ctx.fillStyle = PAPER; ctx.fillRect(ux - 1, uy + 7, 3, 3);
     const fl = 3 + (Math.floor(T * 20) % 3);
-    ctx.fillStyle = species.c; for (let r = 0; r < fl; r++) ctx.fillRect(ux - (fl - r) + 1, uy + 18 + r, (fl - r) * 2 - 1, 1);
+    ctx.fillStyle = AC; for (let r = 0; r < fl; r++) ctx.fillRect(ux - (fl - r) + 1, uy + 18 + r, (fl - r) * 2 - 1, 1);
   } else if (c.shape === 'acorn'){
     for (const col of [PAPER, INK]){
       ctx.fillStyle = col; const g = col === PAPER ? 1 : 0;
@@ -2165,9 +2234,9 @@ function drawAbduction(){
     ctx.drawImage(species.board, -12, Math.round(ch / 2) - 5);
     ctx.drawImage(img, -8, Math.round(ch / 2) - 5 - h);
     ctx.restore();
-    if (Math.random() < 0.5) parts.push({x:ux + (Math.random()-.5)*20, y:fy - Math.random()*20 + cam, vx:0, vy:-0.6, life:0, max:0.35, color:species.c, size:2, grav:0});
+    if (Math.random() < 0.5) parts.push({x:ux + (Math.random()-.5)*20, y:fy - Math.random()*20 + cam, vx:0, vy:-0.6, life:0, max:0.35, color:AC, size:2, grav:0});
   }
-  if (T > 2.55 && T < 2.62) for (let k = 0; k < 14; k++) parts.push({x:ux, y:uy + 8 + cam, vx:(Math.random()-.5)*4, vy:(Math.random()-.5)*3, life:0, max:0.5, color:k % 2 ? species.c : INK, size:2, grav:0});
+  if (T > 2.55 && T < 2.62) for (let k = 0; k < 14; k++) parts.push({x:ux, y:uy + 8 + cam, vx:(Math.random()-.5)*4, vy:(Math.random()-.5)*3, life:0, max:0.5, color:k % 2 ? AC : INK, size:2, grav:0});
   // speed lines as it leaves
   if (T > 2.9 && (c.exit === 'zip' || c.exit === 'glide')){
     ctx.fillStyle = INK;
@@ -2179,7 +2248,7 @@ function drawAbduction(){
   }
   if (c.exit === 'vanish' && T >= 2.95 && !abd.popped){
     abd.popped = true; flash(0.04);
-    for (let k = 0; k < 16; k++) parts.push({x:ux, y:uy + 6 + cam, vx:(Math.random()-.5)*5, vy:(Math.random()-.5)*4, life:0, max:0.35, color:k % 2 ? species.c : INK, size:1 + (k % 2), grav:0, star:true});
+    for (let k = 0; k < 16; k++) parts.push({x:ux, y:uy + 6 + cam, vx:(Math.random()-.5)*5, vy:(Math.random()-.5)*4, life:0, max:0.35, color:k % 2 ? AC : INK, size:1 + (k % 2), grav:0, star:true});
   }
   if (pos.vis) drawCraft(c, ux, uy, T);
   // name the craft at the top of the tower
@@ -2221,9 +2290,9 @@ function drawGraffiti(m){
   const x0 = Math.round(160 - w / 2), y0 = main ? Math.round(H * 0.56 - h / 2) : 22;
   const wave = (m.kind === 'combo' && m.n >= 15) || neg ? 1 : 0;
   const off = c => wave ? Math.round(Math.sin(time * 11 + c * 0.8) * s * 0.4) : 0;
-  let fill = neg ? PAPER : species.c;
+  let fill = neg ? PAPER : AC;
   if (m.kind === 'info') fill = PAPER;
-  if (m.kind === 'hurry') fill = Math.floor(T * 10) % 2 ? PAPER : species.c;
+  if (m.kind === 'hurry') fill = Math.floor(T * 10) % 2 ? PAPER : AC;
   const line = INK, halo = neg ? INK : PAPER;
   const cell = (dx, dy, color) => { ctx.fillStyle = color; glyphCells(m.text, s, (c, r, k) => ctx.fillRect(x0 + (c*6 + k)*s + dx, y0 + r*s + off(c) + dy, s, s)); };
   const o = s >= 4 ? 2 : 1;
@@ -2239,11 +2308,11 @@ function drawGraffiti(m){
     const n = main ? 22 : m.kind === 'species' ? 10 : 0;
     for (let k = 0; k < n; k++){
       const a = Math.random() * Math.PI * 2, d = 0.6 + Math.random() * 1.8;
-      parts.push({x:160 + Math.cos(a) * w * 0.45, y:y0 + h / 2 + Math.sin(a) * h * 0.7 + cam, vx:Math.cos(a) * d, vy:Math.sin(a) * d * 0.7, life:0, max:0.6 + Math.random() * 0.5, color:k % 3 === 0 ? INK : species.c, size:1 + (k % 2), grav:0.2, star:true});
+      parts.push({x:160 + Math.cos(a) * w * 0.45, y:y0 + h / 2 + Math.sin(a) * h * 0.7 + cam, vx:Math.cos(a) * d, vy:Math.sin(a) * d * 0.7, life:0, max:0.6 + Math.random() * 0.5, color:k % 3 === 0 ? INK : AC, size:1 + (k % 2), grav:0.2, star:true});
     }
   }
   if (main && T > 0.2 && !out && Math.random() < 0.35){
-    parts.push({x:x0 - 6 + Math.random() * (w + 12), y:y0 - 6 + Math.random() * (h + 12) + cam, vx:0, vy:0, life:0, max:0.3, color:Math.random() < 0.5 ? species.c : INK, size:1 + (Math.random() < 0.3 ? 1 : 0), grav:0, star:true});
+    parts.push({x:x0 - 6 + Math.random() * (w + 12), y:y0 - 6 + Math.random() * (h + 12) + cam, vx:0, vy:0, life:0, max:0.3, color:Math.random() < 0.5 ? AC : INK, size:1 + (Math.random() < 0.3 ? 1 : 0), grav:0, star:true});
   }
 }
 
@@ -2338,7 +2407,7 @@ function drawTractor(){
       const lg = ledge(raw); if (p.x + FOOT > lg.x && p.x - FOOT < lg.x + lg.w){ target = lg; break; }
     }
     const ty = target ? Math.round(target.y - cam) : H;
-    ctx.fillStyle = target ? species.c : INK;
+    ctx.fillStyle = target ? AC : INK;
     for (let y = py + 4; y < ty; y += 3) ctx.fillRect(px, y, 1, 1);
     if (target){
       if (Math.floor(time * 8) % 2){ ctx.fillRect(target.x - 2, ty - 3, 3, 3); ctx.fillRect(target.x + target.w - 1, ty - 3, 3, 3); }
@@ -2372,7 +2441,7 @@ function drawMeteors(){
     const y = Math.round(m.y - cam);
     ctx.fillStyle = '#b0b0b0'; ctx.fillRect(x - 1, y - 16, 3, 12);
     ctx.fillStyle = PAPER; disc(x, y, 5); ctx.fillStyle = INK; disc(x, y, 4);
-    ctx.fillStyle = species.c; ctx.fillRect(x - 1, y - 1, 2, 2);
+    ctx.fillStyle = AC; ctx.fillRect(x - 1, y - 1, 2, 2);
   }
 }
 function drawArtifacts(){
@@ -2384,19 +2453,19 @@ function drawArtifacts(){
     const x = Math.round(a.x), y = Math.round(a.y - cam + Math.sin(time * 4 + a.x) * 2);
     if (y < 4){
       // off the top of the screen: a blinking arrow shows where it is
-      if (Math.floor(time * 6) % 2){ ctx.fillStyle = species.c; ctx.fillRect(x - 1, 4, 3, 1); ctx.fillRect(x - 2, 5, 5, 1); ctx.fillRect(x, 6, 1, 3); }
+      if (Math.floor(time * 6) % 2){ ctx.fillStyle = AC; ctx.fillRect(x - 1, 4, 3, 1); ctx.fillRect(x - 2, 5, 5, 1); ctx.fillRect(x, 6, 1, 3); }
       continue;
     }
     if (y > H + 10) continue;
     // a pulsing halo so it reads as a pickup
     const pulse = 10 + (Math.floor(time * 6) % 2);
-    ctx.fillStyle = species.c; ring(x, y, pulse, 1); ring(x, y, pulse + 2, 1);
+    ctx.fillStyle = AC; ring(x, y, pulse, 1); ring(x, y, pulse + 2, 1);
     if (a.kind === 0){
       // a Polaroid of a flying saucer: white frame, dark sky, the craft in your color
       ctx.fillStyle = INK; ctx.fillRect(x - 7, y - 8, 15, 17);
       ctx.fillStyle = PAPER; ctx.fillRect(x - 6, y - 7, 13, 15);
       ctx.fillStyle = INK; ctx.fillRect(x - 5, y - 6, 11, 9);
-      ctx.fillStyle = species.c; ctx.fillRect(x - 3, y - 2, 7, 2); ctx.fillRect(x - 1, y - 4, 3, 2);
+      ctx.fillStyle = AC; ctx.fillRect(x - 3, y - 2, 7, 2); ctx.fillRect(x - 1, y - 4, 3, 2);
       ctx.fillStyle = PAPER; ctx.fillRect(x - 2, y + 1, 1, 1); ctx.fillRect(x + 2, y + 1, 1, 1);
     } else if (a.kind === 1){
       // a jagged piece of wreckage with a glint
@@ -2404,19 +2473,19 @@ function drawArtifacts(){
       for (let r = 0; r < 13; r++){ const w = r < 7 ? 2 + r : 16 - r; ctx.fillRect(x - Math.floor(w / 2) - 1, y - 7 + r, w + 2, 1); }
       ctx.fillStyle = '#c8c8c8';
       for (let r = 1; r < 12; r++){ const w = r < 7 ? r : 14 - r; ctx.fillRect(x - Math.floor(w / 2), y - 7 + r, w, 1); }
-      ctx.fillStyle = species.c; ctx.fillRect(x - 1, y - 3, 2, 5);
+      ctx.fillStyle = AC; ctx.fillRect(x - 1, y - 3, 2, 5);
       if (Math.floor(time * 4 + a.x) % 4 === 0){ ctx.fillStyle = PAPER; drawStar(x + 2, y - 4, 1); }
     } else {
       // a data disc with a label
       ctx.fillStyle = INK; disc(x, y, 7);
-      ctx.fillStyle = species.c; ring(x, y, 5, 1);
+      ctx.fillStyle = AC; ring(x, y, 5, 1);
       ctx.fillStyle = PAPER; ctx.fillRect(x - 1, y - 1, 3, 3);
       ctx.fillStyle = INK; ctx.fillRect(x, y, 1, 1);
     }
     // the reward tag above it
     const ty = y - 18;
     ctx.fillStyle = INK; ctx.fillRect(x - 9, ty - 1, 19, 9);
-    ctx.fillStyle = species.c; ctx.fillRect(x - 7, ty + 3, 3, 1); ctx.fillRect(x - 6, ty + 2, 1, 3);
+    ctx.fillStyle = AC; ctx.fillRect(x - 7, ty + 3, 3, 1); ctx.fillRect(x - 6, ty + 2, 1, 3);
     text3('50', x - 2, ty + 1, PAPER);
   }
   for (const fz of floaters){
@@ -2428,11 +2497,13 @@ function drawArtifacts(){
 }
 // Whiteout: fog rolls up from below and swallows everything under you
 function drawWhiteout(){
+  // these effects mean "darkness" and "fog" whatever the screen mode, so they swap ink in the dark
+  const INK_ = DARK ? PAPER : INK, PAPER_ = DARK ? INK : PAPER;
   if (!ev || ev.type !== 'fog') return;
   const k = Math.max(0, Math.min(1, ev.t / 0.8, (ev.dur - ev.t) / 0.6));
   const top = Math.round(H * (0.42 + Math.sin(time * 0.9) * 0.04) + (1 - k) * H * 0.6);
   ctx.save(); ctx.beginPath(); ctx.rect(INL, 0, INR - INL, H); ctx.clip();
-  ctx.fillStyle = PAPER;
+  ctx.fillStyle = PAPER_;
   for (let y = top; y < H; y++){
     const d = Math.min(1, (y - top) / (H * 0.3));
     ctx.globalAlpha = d; ctx.fillRect(INL, y, INR - INL, 1);
@@ -2447,14 +2518,16 @@ function drawWhiteout(){
 }
 // Radar: the tower goes black; pings ripple out from you and briefly light the ledges they cross
 function drawRadar(){
+  // these effects mean "darkness" and "fog" whatever the screen mode, so they swap ink in the dark
+  const INK_ = DARK ? PAPER : INK, PAPER_ = DARK ? INK : PAPER;
   if (!ev || ev.type !== 'radar') return;
   const k = Math.max(0, Math.min(1, ev.t / 0.4, (ev.dur - ev.t) / 0.4));
   ctx.save(); ctx.beginPath(); ctx.rect(INL, 0, INR - INL, H); ctx.clip();
-  ctx.globalAlpha = k; ctx.fillStyle = INK; ctx.fillRect(INL, 0, INR - INL, H); ctx.globalAlpha = 1;
+  ctx.globalAlpha = k; ctx.fillStyle = INK_; ctx.fillRect(INL, 0, INR - INL, H); ctx.globalAlpha = 1;
   for (const q of (ev.pulses || [])){
     const r = (time - q.t) * 150, cy = q.y - cam;
     if (r > 300) continue;
-    ctx.globalAlpha = Math.max(0, 1 - r / 300); ctx.fillStyle = species.c; ring(q.x, cy, Math.round(r), 1);
+    ctx.globalAlpha = Math.max(0, 1 - r / 300); ctx.fillStyle = AC; ring(q.x, cy, Math.round(r), 1);
     for (let i = Math.max(0, Math.floor(-(cam + H) / GAP) - 1); i <= Math.ceil(-cam / GAP) + 1; i++){
       const raw = floorAt(i); if (raw.gone) continue;
       const lg = ledge(raw), ly = lg.y - cam;
@@ -2462,8 +2535,8 @@ function drawRadar(){
       const dist = Math.hypot(nx - q.x, ny - cy);
       if (dist <= r && r - dist < 110){
         ctx.globalAlpha = 1 - (r - dist) / 110;
-        ctx.fillStyle = PAPER; ctx.fillRect(lg.x, Math.round(ly), lg.w, 1); ctx.fillRect(lg.x, Math.round(ly) + FH - 1, lg.w, 1); ctx.fillRect(lg.x, Math.round(ly), 1, FH); ctx.fillRect(lg.x + lg.w - 1, Math.round(ly), 1, FH);
-        ctx.fillStyle = species.c; ctx.fillRect(lg.x + 1, Math.round(ly) + 1, lg.w - 2, 2);
+        ctx.fillStyle = PAPER_; ctx.fillRect(lg.x, Math.round(ly), lg.w, 1); ctx.fillRect(lg.x, Math.round(ly) + FH - 1, lg.w, 1); ctx.fillRect(lg.x, Math.round(ly), 1, FH); ctx.fillRect(lg.x + lg.w - 1, Math.round(ly), 1, FH);
+        ctx.fillStyle = AC; ctx.fillRect(lg.x + 1, Math.round(ly) + 1, lg.w - 2, 2);
       }
     }
   }
@@ -2594,19 +2667,21 @@ function drawBackdrop(){
   ctx.restore();
 }
 function drawBlackout(){
+  // these effects mean "darkness" and "fog" whatever the screen mode, so they swap ink in the dark
+  const INK_ = DARK ? PAPER : INK, PAPER_ = DARK ? INK : PAPER;
   if (!ev || ev.type !== 'dark') return;
   const k = Math.max(0, Math.min(1, ev.t / 0.4, (ev.dur - ev.t) / 0.4));
   const px = Math.round(prevX + (p.x - prevX) * alpha), py = Math.round(prevY + (p.y - prevY) * alpha - cam) - 12;
   const r = Math.round(150 - 104 * k);
   ctx.save();
   ctx.beginPath(); ctx.rect(INL, 0, INR - INL, H); ctx.arc(px, py, r, 0, Math.PI * 2, true);
-  ctx.fillStyle = INK; ctx.fill('evenodd');
+  ctx.fillStyle = INK_; ctx.fill('evenodd');
   // a dithered rim so the light falls off in pixels
-  ctx.fillStyle = INK;
+  ctx.fillStyle = INK_;
   for (let a = 0; a < Math.PI * 2; a += 0.05){ const d = r - 2 - (Math.floor(a * 40) % 2) * 2; ctx.fillRect(Math.round(px + Math.cos(a) * d), Math.round(py + Math.sin(a) * d), 1, 1); }
   // faint ledge edges so you can still feel your way
   ctx.beginPath(); ctx.rect(INL, 0, INR - INL, H); ctx.clip();
-  ctx.fillStyle = '#2b2b2b';
+  ctx.fillStyle = (DARK ? '#d4d4d4' : '#2b2b2b');
   for (let i = Math.max(0, Math.floor(-(cam + H) / GAP) - 1); i <= Math.ceil(-cam / GAP) + 1; i++){
     const raw = floorAt(i); if (raw.gone) continue; const lg = ledge(raw), y = Math.round(lg.y - cam);
     if (Math.hypot(lg.x + lg.w / 2 - px, y - py) > r) ctx.fillRect(lg.x, y, lg.w, 1);
@@ -2671,6 +2746,11 @@ function render(){
   // negative mode and flashes invert the whole screen
   let inv = negT > 0 && !(negT < 1 && Math.floor(negT * 8) % 2);
   if (flashT > 0) inv = !inv;
+  if (DARK){
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalCompositeOperation = 'difference'; ctx.fillStyle = '#ffffff'; ctx.fillRect(INL, 0, INR - INL, H);
+    ctx.globalCompositeOperation = 'source-over';
+  }
   if (inv){
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.globalCompositeOperation = 'difference'; ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, W, H);
@@ -2754,6 +2834,7 @@ buildRoster(); renderHof();
 document.querySelectorAll('.mode').forEach(b => b.addEventListener('click', () => setMode(b.dataset.m === 'classic')));
 $('#fSpecies').textContent = SPECIES.length + ' species';
 $('#fTrack').textContent = TRACKS.length + ' original tracks';
+applyTheme();
 fit(); reset(); showOverlay('menu');
 requestAnimationFrame(frame);
 })();

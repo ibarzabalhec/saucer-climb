@@ -164,7 +164,7 @@ body.playing #cursor{opacity:0;}
       <p class="quote" id="oQuote"></p>
       <div class="split">
         <div class="statl"><div><b id="oFloor">0</b>Floor reached</div><div><b id="oCombo">0</b>Longest combo, in floors</div><div><b id="oCraft">Saucer</b><span id="oLore"></span></div></div>
-        <div><div class="hofh">Best on this Mac</div><ol id="hofList"></ol><div class="net" id="topFloor"></div><div class="net" id="netStatus"></div></div>
+        <div><div class="hofh" id="hofHead">Best on this Mac</div><ol id="hofList"></ol><div class="net" id="topFloor"></div><div class="net" id="netStatus"></div></div>
       </div>
       <div class="foot" id="oFoot"><button class="go" id="againBtn">Play again<span class="blk"></span></button><span class="small" id="overHint"></span><button class="ghost" id="menuBtn">Menu</button></div>
       <div class="bgpick" id="bgPick"><span id="bgAsk">Background too busy? (B)</span><button data-bg="tiles">Art</button><button data-bg="lines">Lines</button><button data-bg="plain">Plain</button><span style="margin-left:1.6cqw">Screen (L):</span><button data-theme-set="light">Light</button><button data-theme-set="dark">Dark</button></div>
@@ -1377,7 +1377,8 @@ function showOver(){
   document.body.classList.remove('playing');
   speak(DEATH_LINES[Math.floor(Math.random() * DEATH_LINES.length)]);
   showOverlay('over');
-  if (entering){ const i = $('#ini'); i.value = store.get('scl.ini', ''); $('#iniHelp').textContent = 'You made the hall of fame. Type your name, then press Enter. Esc skips'; i.focus(); i.select(); }
+  loadWorld();
+  if (entering){ const i = $('#ini'); i.value = store.get('scl.ini', ''); $('#iniHelp').textContent = ONLINE ? 'Put your run on the world board. Type your name, then press Enter. Esc skips' : 'You made the hall of fame. Type your name, then press Enter. Esc skips'; i.focus(); i.select(); }
 }
 
 const TABS = ONLINE ? [['all','All time'],['week','This week'],['local','This Mac']] : [['local','This Mac']];
@@ -1448,12 +1449,26 @@ async function submitScore(e){
   return m ? +m[1] + 1 : null;
 }
 let myEntry = null;
+// The game-over list shows the world board when it's reachable, and this Mac's list otherwise.
+let worldRows = null;
+function loadWorld(){
+  if (!ONLINE) return Promise.resolve();
+  return fetchBoard('all').then(r => { worldRows = r; renderHof(); updateBest(); }).catch(() => { worldRows = null; renderHof(); });
+}
 function renderHof(){
-  const ol = $('#hofList');
+  const ol = $('#hofList'), row = (cls, i, name, f, sp, sc) => '<li class="' + cls + '"><span>' + (i + 1) + '</span><span class="nm">' + esc(name) + '</span><span class="fl">FLOOR ' + f + '</span><span class="num"><span class="sw" style="background:' + swatch(sp) + '"></span>' + sc + ' pts</span></li>';
+  if (ONLINE && worldRows){
+    $('#hofHead').textContent = 'World top 5';
+    $('#topFloor').textContent = hof.length ? 'Your best on this Mac: floor ' + hof[0].f : '';
+    ol.innerHTML = worldRows.length ? worldRows.slice(0, 5).map((r, i) => row(myEntry && r.name === myEntry.n && r.score === myEntry.s && r.floor === myEntry.f ? 'me' : '', i, r.name, r.floor, r.species, r.score)).join('')
+      : '<li><span></span><span>---</span><span>No scores yet</span><span></span></li>';
+    return;
+  }
+  $('#hofHead').textContent = 'Best on this Mac';
   $('#topFloor').textContent = '';
   const top = hof.slice(0, 5);
   if (!hof.length){ ol.innerHTML = '<li><span></span><span>---</span><span>No entries yet</span><span></span></li>'; return; }
-  ol.innerHTML = top.map((h, i) => '<li class="' + (i === lastEntry ? 'me' : '') + '"><span>' + (i + 1) + '</span><span class="nm">' + esc(h.n) + '</span><span class="fl">FLOOR ' + h.f + '</span><span class="num"><span class="sw" style="background:' + swatch(h.sp) + '"></span>' + h.s + ' pts</span></li>').join('');
+  ol.innerHTML = top.map((h, i) => row(i === lastEntry ? 'me' : '', i, h.n, h.f, h.sp, h.s)).join('');
 }
 function saveEntry(){
   const n = cleanName($('#ini').value);
@@ -1466,8 +1481,8 @@ function saveEntry(){
   myEntry = entry;
   if (ONLINE){
     $('#netStatus').textContent = 'Sending to the online board...';
-    submitScore(entry).then(rank => { $('#netStatus').textContent = rank ? 'Online rank: ' + rank : 'Saved to the online board'; })
-      .catch(() => { $('#netStatus').textContent = 'Could not reach the online board. Saved on this Mac.'; });
+    submitScore(entry).then(rank => { $('#netStatus').textContent = rank ? 'World rank: ' + rank : 'Saved to the world board'; loadWorld(); })
+      .catch(() => { $('#netStatus').textContent = 'Could not reach the world board. Saved on this Mac.'; });
   }
   store.set(modeKey('scl.hof'), hof);
   entering = false; $('#oEntry').hidden = true; $('#oFoot').hidden = false; $('#ini').blur();
@@ -2964,7 +2979,8 @@ document.addEventListener('mouseout', e => {
 
 function updateBest(){
   const t = bestFloor > 0 ? 'Record: floor ' + bestFloor + ', best score ' + best : 'No record yet';
-  $('#mBest').textContent = t; $('#fBest').textContent = t;
+  const w = worldRows && worldRows[0];
+  $('#mBest').textContent = w ? 'World record: floor ' + w.floor + ' by ' + w.name : t; $('#fBest').textContent = t;
 }
 
 updateBest();
@@ -2974,6 +2990,7 @@ $('#fSpecies').textContent = SPECIES.length + ' species';
 $('#fTrack').textContent = TRACKS.length + ' original tracks';
 applyTheme();
 fit(); reset(); showOverlay('menu');
+loadWorld();
 requestAnimationFrame(frame);
 })();
 </script>

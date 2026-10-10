@@ -30,6 +30,10 @@ All recorded character voices in Saucer Climb are released under CC0 (public dom
 
 - "Female scream 01" and "Female scream 02" by missozzy (Freesound). https://freesound.org/people/missozzy/sounds/169810/ and https://freesound.org/people/missozzy/sounds/169811/
 
+## Landing and wall hits
+
+- **Impact Sounds** by Kenney (www.kenney.nl), CC0. Landings use the five "footstep_wood" takes; wall bounces use the five "impactWood_medium" takes.
+
 ## Jump efforts
 
 - **15 vocal male strain/hurt/pain/jump sounds** (OpenGameArt). https://opengameart.org/content/15-vocal-male-strainhurtpainjump-sounds
